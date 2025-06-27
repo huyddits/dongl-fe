@@ -1,0 +1,18 @@
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Run lint-staged
+npx lint-staged
+
+# Run type check
+echo "🔎 Type checking..."
+npm run type-check
+
+# Run tests
+echo "🧪 Running tests..."
+npm run test -- --watchAll=false --passWithNoTests
+
+echo "✅ Pre-commit checks passed!"

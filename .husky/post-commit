@@ -1,0 +1,7 @@
+# .husky/post-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🎉 Commit successful!"
+echo "📝 Commit: $(git log --oneline -1)"
+echo "🌿 Branch: $(git branch --show-current)"

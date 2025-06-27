@@ -1,0 +1,154 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: "18.17.0"
+  DOCKER_DRIVER: overlay2
+
+# Cache node_modules
+cache:
+  paths:
+    - node_modules/
+    - .next/cache/
+
+# Test stage
+test:
+  stage: test
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - npm ci
+    - npm run lint
+    - npm run type-check
+    - npm run test
+  only:
+    - merge_requests
+    - main
+    - develop
+    - staging
+    - uat
+
+# Build stage for staging
+build:staging:
+  stage: build
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - npm ci
+    - cp .env.staging .env.local
+    - npm run db:generate
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - public/
+    expire_in: 1 hour
+  only:
+    - staging
+
+# Build stage for UAT
+build:uat:
+  stage: build
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - npm ci
+    - cp .env.uat .env.local
+    - npm run db:generate
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - public/
+    expire_in: 1 hour
+  only:
+    - uat
+
+# Build stage for production
+build:production:
+  stage: build
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - npm ci
+    - cp .env.production .env.local
+    - npm run db:generate
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - public/
+    expire_in: 1 hour
+  only:
+    - main
+
+# Deploy to staging
+deploy:staging:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$STAGING_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $STAGING_SERVER >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && git pull origin staging"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && npm ci"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && cp .env.staging .env.local"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && npm run build"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && pm2 restart staging-app"
+  environment:
+    name: staging
+    url: https://staging.project.company.com
+  only:
+    - staging
+
+# Deploy to UAT
+deploy:uat:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$UAT_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $UAT_SERVER >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $UAT_USER@$UAT_SERVER "cd $UAT_PATH && git pull origin uat"
+    - ssh $UAT_USER@$UAT_SERVER "cd $UAT_PATH && npm ci"
+    - ssh $UAT_USER@$UAT_SERVER "cd $UAT_PATH && cp .env.uat .env.local"
+    - ssh $UAT_USER@$UAT_SERVER "cd $UAT_PATH && npm run build"
+    - ssh $UAT_USER@$UAT_SERVER "cd $UAT_PATH && pm2 restart uat-app"
+  environment:
+    name: uat
+    url: https://uat.project.company.com
+  only:
+    - uat
+
+# Deploy to production
+deploy:production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $PRODUCTION_SERVER >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && git pull origin main"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && npm ci"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && cp .env.production .env.local"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && npm run build"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && pm2 restart production-app"
+  environment:
+    name: production
+    url: https://project.company.com
+  when: manual
+  only:
+    - main
