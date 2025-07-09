@@ -6,7 +6,7 @@ echo "🚀 Running pre-push checks..."
 
 # Run full test suite
 echo "🧪 Running full test suite..."
-npm run test -- --watchAll=false
+npm run test
 
 # Run build to ensure everything compiles
 echo "🏗️  Building project..."

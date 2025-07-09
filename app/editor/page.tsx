@@ -1,18 +1,18 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Editor } from '@tinymce/tinymce-react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { 
-  Save, 
-  FileText, 
-  Eye, 
+import { Card, CardContent } from '@/components/ui/card'
+import { Editor } from '@tinymce/tinymce-react'
+import {
+  Save,
+  FileText,
+  Eye,
   Download,
   Maximize2,
   Minimize2,
-  Settings
+  Settings,
 } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 export default function EditorPage() {
@@ -25,7 +25,7 @@ export default function EditorPage() {
 
   const handleEditorChange = (newContent: string) => {
     setContent(newContent)
-    
+
     // Count words
     const textContent = newContent.replace(/<[^>]*>/g, '').trim()
     const words = textContent ? textContent.split(/\s+/).length : 0
@@ -47,7 +47,10 @@ export default function EditorPage() {
 
   const handleAutoSave = (currentContent: string) => {
     // Simulate auto-save
-    console.log('Auto-saving document:', { title: documentTitle, content: currentContent })
+    console.log('Auto-saving document:', {
+      title: documentTitle,
+      content: currentContent,
+    })
     setLastSaved(new Date())
     toast.info('Document auto-saved')
   }
@@ -148,14 +151,18 @@ export default function EditorPage() {
   }
 
   return (
-    <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-background' : 'container py-6'}`}>
-      <div className={`${isFullscreen ? 'h-full flex flex-col' : 'max-w-6xl mx-auto'}`}>
+    <div
+      className={`${isFullscreen ? 'bg-background fixed inset-0 z-50' : 'container py-6'}`}
+    >
+      <div
+        className={`${isFullscreen ? 'flex h-full flex-col' : 'mx-auto max-w-6xl'}`}
+      >
         {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <FileText className="h-6 w-6 text-primary" />
+                <FileText className="text-primary h-6 w-6" />
                 <h1 className="text-2xl font-bold">Rich Text Editor</h1>
               </div>
               <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
@@ -167,7 +174,7 @@ export default function EditorPage() {
                 </span>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -219,7 +226,10 @@ export default function EditorPage() {
           {/* Document Title */}
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="title"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
                 Document Title
               </label>
               <input
@@ -227,7 +237,7 @@ export default function EditorPage() {
                 type="text"
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Enter document title..."
               />
             </div>
@@ -235,15 +245,17 @@ export default function EditorPage() {
         </div>
 
         {/* Separator */}
-        <div className="border-b border-gray-200 mb-6"></div>
+        <div className="mb-6 border-b border-gray-200"></div>
 
         {/* Editor */}
         <div className={`${isFullscreen ? 'flex-1' : ''}`}>
-          <Card className={`${isFullscreen ? 'h-full border-0 shadow-none' : ''}`}>
-            <CardContent className={`${isFullscreen ? 'p-4 h-full' : 'p-6'}`}>
+          <Card
+            className={`${isFullscreen ? 'h-full border-0 shadow-none' : ''}`}
+          >
+            <CardContent className={`${isFullscreen ? 'h-full p-4' : 'p-6'}`}>
               <Editor
                 apiKey="mdw8t0d7iws0ttjj440lh9ew605iy7oybwojhs577cjsnqb7" // Thay bằng API key thật hoặc bỏ để dùng domain localhost
-                onInit={(evt, editor) => editorRef.current = editor}
+                onInit={(evt, editor) => (editorRef.current = editor)}
                 initialValue="<p>Start writing your document...</p>"
                 value={content}
                 onEditorChange={handleEditorChange}
@@ -251,15 +263,35 @@ export default function EditorPage() {
                   height: isFullscreen ? '100%' : 600,
                   menubar: 'file edit view insert format tools table help',
                   plugins: [
-                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                    'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                    'insertdatetime', 'media', 'table', 'help', 'wordcount', 'autosave',
-                    'emoticons', 'template', 'codesample', 'hr', 'pagebreak', 'nonbreaking'
+                    'advlist',
+                    'autolink',
+                    'lists',
+                    'link',
+                    'image',
+                    'charmap',
+                    'preview',
+                    'anchor',
+                    'searchreplace',
+                    'visualblocks',
+                    'code',
+                    'fullscreen',
+                    'insertdatetime',
+                    'media',
+                    'table',
+                    'help',
+                    'wordcount',
+                    'autosave',
+                    'emoticons',
+                    'template',
+                    'codesample',
+                    'hr',
+                    'pagebreak',
+                    'nonbreaking',
                   ],
                   toolbar: [
                     'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor',
                     'link image media table | align lineheight | numlist bullist indent outdent',
-                    'emoticons charmap codesample | insertdatetime hr pagebreak | removeformat | help'
+                    'emoticons charmap codesample | insertdatetime hr pagebreak | removeformat | help',
                   ],
                   content_style: `
                     body { 
@@ -343,7 +375,11 @@ export default function EditorPage() {
                   paste_data_images: true,
                   automatic_uploads: true,
                   file_picker_types: 'image',
-                  file_picker_callback: function (cb, value, meta) {
+                  file_picker_callback: function (
+                    cb: any,
+                    value: any,
+                    meta: any
+                  ) {
                     const input = document.createElement('input')
                     input.setAttribute('type', 'file')
                     input.setAttribute('accept', 'image/*')
@@ -351,21 +387,21 @@ export default function EditorPage() {
                     input.addEventListener('change', (e: any) => {
                       const file = e.target.files[0]
                       const reader = new FileReader()
-                      
+
                       reader.addEventListener('load', () => {
                         cb(reader.result as string, { title: file.name })
                       })
-                      
+
                       reader.readAsDataURL(file)
                     })
 
                     input.click()
                   },
-                  setup: (editor) => {
+                  setup: (editor: any) => {
                     editor.on('init', () => {
                       console.log('TinyMCE editor initialized')
                     })
-                  }
+                  },
                 }}
               />
             </CardContent>
@@ -374,7 +410,7 @@ export default function EditorPage() {
 
         {/* Footer */}
         {!isFullscreen && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-6 border-t border-gray-200 pt-6">
             <div className="flex items-center justify-between text-sm text-gray-500">
               <div className="flex items-center gap-4">
                 <span>Ready to write</span>

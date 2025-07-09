@@ -1,8 +1,9 @@
+import { MainLayout } from '@/components/layout/main-layout'
+import { config } from '@/lib/config'
+import { ReactQueryProvider } from '@/providers'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { MainLayout } from '@/components/layout/main-layout'
-import { config } from '@/lib/config'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -36,11 +37,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning className="light">
       <body className={inter.className}>
-        <MainLayout>
-          {children}
-        </MainLayout>
+        <ReactQueryProvider>
+          <MainLayout>{children}</MainLayout>
+        </ReactQueryProvider>
       </body>
     </html>
   )
