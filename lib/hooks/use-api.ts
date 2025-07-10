@@ -21,7 +21,7 @@ export function useApi<T>(
   options: UseApiOptions = {}
 ) {
   const { immediate = true, onSuccess, onError } = options
-  
+
   const [state, setState] = useState<ApiState<T>>({
     data: null,
     loading: immediate,
@@ -29,8 +29,8 @@ export function useApi<T>(
   })
 
   const execute = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }))
-    
+    setState((prev) => ({ ...prev, loading: true, error: null }))
+
     try {
       const response = await apiCall()
       setState({
@@ -38,11 +38,11 @@ export function useApi<T>(
         loading: false,
         error: null,
       })
-      
+
       if (onSuccess) {
         onSuccess(response.data)
       }
-      
+
       return response.data
     } catch (error) {
       const apiError = error as ApiError
@@ -51,11 +51,11 @@ export function useApi<T>(
         loading: false,
         error: apiError,
       })
-      
+
       if (onError) {
         onError(apiError)
       }
-      
+
       throw error
     }
   }, [apiCall, onSuccess, onError])
@@ -79,44 +79,47 @@ export function useMutation<T, TVariables = any>(
   options: UseApiOptions = {}
 ) {
   const { onSuccess, onError } = options
-  
+
   const [state, setState] = useState<ApiState<T>>({
     data: null,
     loading: false,
     error: null,
   })
 
-  const mutate = useCallback(async (variables: TVariables) => {
-    setState(prev => ({ ...prev, loading: true, error: null }))
-    
-    try {
-      const response = await mutationFn(variables)
-      setState({
-        data: response.data,
-        loading: false,
-        error: null,
-      })
-      
-      if (onSuccess) {
-        onSuccess(response.data)
+  const mutate = useCallback(
+    async (variables: TVariables) => {
+      setState((prev) => ({ ...prev, loading: true, error: null }))
+
+      try {
+        const response = await mutationFn(variables)
+        setState({
+          data: response.data,
+          loading: false,
+          error: null,
+        })
+
+        if (onSuccess) {
+          onSuccess(response.data)
+        }
+
+        return response.data
+      } catch (error) {
+        const apiError = error as ApiError
+        setState({
+          data: null,
+          loading: false,
+          error: apiError,
+        })
+
+        if (onError) {
+          onError(apiError)
+        }
+
+        throw error
       }
-      
-      return response.data
-    } catch (error) {
-      const apiError = error as ApiError
-      setState({
-        data: null,
-        loading: false,
-        error: apiError,
-      })
-      
-      if (onError) {
-        onError(apiError)
-      }
-      
-      throw error
-    }
-  }, [mutationFn, onSuccess, onError])
+    },
+    [mutationFn, onSuccess, onError]
+  )
 
   const reset = useCallback(() => {
     setState({
@@ -147,12 +150,16 @@ interface PaginatedApiState<T> {
 }
 
 export function usePaginatedApi<T>(
-  apiCall: (params: { page: number; limit: number; [key: string]: any }) => Promise<ApiResponse<T[]>>,
+  apiCall: (params: {
+    page: number
+    limit: number
+    [key: string]: any
+  }) => Promise<ApiResponse<T[]>>,
   initialParams: { page?: number; limit?: number; [key: string]: any } = {},
   options: UseApiOptions = {}
 ) {
   const { immediate = true, onSuccess, onError } = options
-  
+
   const [state, setState] = useState<PaginatedApiState<T>>({
     data: [],
     loading: immediate,
@@ -166,50 +173,53 @@ export function usePaginatedApi<T>(
     ...initialParams,
   })
 
-  const execute = useCallback(async (newParams?: any) => {
-    const finalParams = newParams ? { ...params, ...newParams } : params
-    setState(prev => ({ ...prev, loading: true, error: null }))
-    
-    try {
-      const response = await apiCall(finalParams)
-      setState({
-        data: response.data,
-        loading: false,
-        error: null,
-        pagination: response.pagination || null,
-      })
-      
-      if (onSuccess) {
-        onSuccess(response.data)
+  const execute = useCallback(
+    async (newParams?: any) => {
+      const finalParams = newParams ? { ...params, ...newParams } : params
+      setState((prev) => ({ ...prev, loading: true, error: null }))
+
+      try {
+        const response = await apiCall(finalParams)
+        setState({
+          data: response.data,
+          loading: false,
+          error: null,
+          pagination: response.pagination || null,
+        })
+
+        if (onSuccess) {
+          onSuccess(response.data)
+        }
+
+        return response.data
+      } catch (error) {
+        const apiError = error as ApiError
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: apiError,
+        }))
+
+        if (onError) {
+          onError(apiError)
+        }
+
+        throw error
       }
-      
-      return response.data
-    } catch (error) {
-      const apiError = error as ApiError
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: apiError,
-      }))
-      
-      if (onError) {
-        onError(apiError)
-      }
-      
-      throw error
-    }
-  }, [apiCall, params, onSuccess, onError])
+    },
+    [apiCall, params, onSuccess, onError]
+  )
 
   const setPage = useCallback((page: number) => {
-    setParams(prev => ({ ...prev, page }))
+    setParams((prev) => ({ ...prev, page }))
   }, [])
 
   const setLimit = useCallback((limit: number) => {
-    setParams(prev => ({ ...prev, limit, page: 1 }))
+    setParams((prev) => ({ ...prev, limit, page: 1 }))
   }, [])
 
   const setFilters = useCallback((filters: any) => {
-    setParams(prev => ({ ...prev, ...filters, page: 1 }))
+    setParams((prev) => ({ ...prev, ...filters, page: 1 }))
   }, [])
 
   useEffect(() => {
@@ -230,19 +240,27 @@ export function usePaginatedApi<T>(
     setPage,
     setLimit,
     setFilters,
-    nextPage: state.pagination ? () => setPage(state.pagination!.page + 1) : undefined,
-    prevPage: state.pagination ? () => setPage(Math.max(1, state.pagination!.page - 1)) : undefined,
+    nextPage: state.pagination
+      ? () => setPage(state.pagination!.page + 1)
+      : undefined,
+    prevPage: state.pagination
+      ? () => setPage(Math.max(1, state.pagination!.page - 1))
+      : undefined,
   }
 }
 
 // Infinite scroll hook
 export function useInfiniteApi<T>(
-  apiCall: (params: { page: number; limit: number; [key: string]: any }) => Promise<ApiResponse<T[]>>,
+  apiCall: (params: {
+    page: number
+    limit: number
+    [key: string]: any
+  }) => Promise<ApiResponse<T[]>>,
   initialParams: { limit?: number; [key: string]: any } = {},
   options: UseApiOptions = {}
 ) {
   const { immediate = true, onSuccess, onError } = options
-  
+
   const [state, setState] = useState<{
     data: T[]
     loading: boolean
@@ -262,40 +280,45 @@ export function useInfiniteApi<T>(
     ...initialParams,
   })
 
-  const loadMore = useCallback(async (reset = false) => {
-    const currentPage = reset ? 1 : state.page
-    setState(prev => ({ ...prev, loading: true, error: null }))
-    
-    try {
-      const response = await apiCall({ ...params, page: currentPage })
-      setState(prev => ({
-        data: reset ? response.data : [...prev.data, ...response.data],
-        loading: false,
-        error: null,
-        hasMore: response.pagination ? currentPage < response.pagination.pages : false,
-        page: currentPage + 1,
-      }))
-      
-      if (onSuccess) {
-        onSuccess(response.data)
+  const loadMore = useCallback(
+    async (reset = false) => {
+      const currentPage = reset ? 1 : state.page
+      setState((prev) => ({ ...prev, loading: true, error: null }))
+
+      try {
+        const response = await apiCall({ ...params, page: currentPage })
+        setState((prev) => ({
+          data: reset ? response.data : [...prev.data, ...response.data],
+          loading: false,
+          error: null,
+          hasMore: response.pagination
+            ? currentPage < response.pagination.pages
+            : false,
+          page: currentPage + 1,
+        }))
+
+        if (onSuccess) {
+          onSuccess(response.data)
+        }
+
+        return response.data
+      } catch (error) {
+        const apiError = error as ApiError
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: apiError,
+        }))
+
+        if (onError) {
+          onError(apiError)
+        }
+
+        throw error
       }
-      
-      return response.data
-    } catch (error) {
-      const apiError = error as ApiError
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: apiError,
-      }))
-      
-      if (onError) {
-        onError(apiError)
-      }
-      
-      throw error
-    }
-  }, [apiCall, params, state.page, onSuccess, onError])
+    },
+    [apiCall, params, state.page, onSuccess, onError]
+  )
 
   const refresh = useCallback(() => {
     return loadMore(true)

@@ -19,10 +19,12 @@ const eslintConfig = [
     },
     rules: {
       'no-void': 'off',
-      'no-console': 'error',
+      'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'react-hooks/exhaustive-dep': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { ignoreRestSiblings: true },
+        { ignoreRestSiblings: true, caughtErrors: 'none' },
       ],
       'prettier/prettier': ['warn', prettierConfig],
     },

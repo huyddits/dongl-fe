@@ -20,7 +20,9 @@ export interface ApiError {
 }
 
 // Request interceptor type
-type RequestInterceptor = (config: RequestInit & { url: string }) => RequestInit & { url: string }
+type RequestInterceptor = (
+  config: RequestInit & { url: string }
+) => RequestInit & { url: string }
 
 // Response interceptor type
 type ResponseInterceptor = (response: Response) => Promise<Response>
@@ -51,7 +53,7 @@ class ApiClient {
       // Add default headers
       config.headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         ...config.headers,
       }
 
@@ -64,10 +66,13 @@ class ApiClient {
 
       // Log request in development
       if (config.app?.env === 'development') {
-        console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`, {
-          headers: config.headers,
-          body: config.body,
-        })
+        console.log(
+          `🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`,
+          {
+            headers: config.headers,
+            body: config.body,
+          }
+        )
       }
 
       return config
@@ -94,7 +99,9 @@ class ApiClient {
 
       if (response.status === 403) {
         // Forbidden - show error message
-        console.error('Access forbidden. You don\'t have permission to access this resource.')
+        console.error(
+          "Access forbidden. You don't have permission to access this resource."
+        )
       }
 
       if (response.status >= 500) {
@@ -131,11 +138,11 @@ class ApiClient {
   // Get auth token
   getAuthToken(): string | null {
     if (this.authToken) return this.authToken
-    
+
     if (typeof window !== 'undefined') {
       return localStorage.getItem('auth_token')
     }
-    
+
     return null
   }
 
@@ -150,7 +157,10 @@ class ApiClient {
   }
 
   // Private method to execute request with interceptors
-  private async executeRequest(url: string, options: RequestInit = {}): Promise<Response> {
+  private async executeRequest(
+    url: string,
+    options: RequestInit = {}
+  ): Promise<Response> {
     let requestConfig = { ...options, url }
 
     // Apply request interceptors
@@ -159,8 +169,8 @@ class ApiClient {
     }
 
     // Make the actual request
-    const fullUrl = requestConfig.url.startsWith('http') 
-      ? requestConfig.url 
+    const fullUrl = requestConfig.url.startsWith('http')
+      ? requestConfig.url
       : `${this.baseURL}${requestConfig.url}`
 
     let response = await fetch(fullUrl, {
@@ -211,7 +221,10 @@ class ApiClient {
   }
 
   // HTTP Methods
-  async get<T>(url: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
+  async get<T>(
+    url: string,
+    params?: Record<string, any>
+  ): Promise<ApiResponse<T>> {
     const searchParams = new URLSearchParams()
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -220,10 +233,10 @@ class ApiClient {
         }
       })
     }
-    
+
     const queryString = searchParams.toString()
     const fullUrl = queryString ? `${url}?${queryString}` : url
-    
+
     return this.request<T>(fullUrl, { method: 'GET' })
   }
 
@@ -253,10 +266,14 @@ class ApiClient {
   }
 
   // File upload method
-  async uploadFile<T>(url: string, file: File, additionalData?: Record<string, any>): Promise<ApiResponse<T>> {
+  async uploadFile<T>(
+    url: string,
+    file: File,
+    additionalData?: Record<string, any>
+  ): Promise<ApiResponse<T>> {
     const formData = new FormData()
     formData.append('file', file)
-    
+
     if (additionalData) {
       Object.entries(additionalData).forEach(([key, value]) => {
         formData.append(key, value.toString())

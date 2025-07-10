@@ -1,12 +1,25 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/lib/utils'
-import { Clock, Database, Smartphone, RefreshCw, Wifi, WifiOff } from 'lucide-react'
-import { useApi } from '@/lib/hooks/use-api'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { api, Post } from '@/lib/api/services'
+import { useApi } from '@/lib/hooks/use-api'
+import { formatDate } from '@/lib/utils'
+import {
+  Clock,
+  Database,
+  Smartphone,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+} from 'lucide-react'
+import { useState } from 'react'
 
 // Mock data for when API is not available
 const MOCK_POSTS: Post[] = [
@@ -108,9 +121,10 @@ export default function CSRPage() {
             <Smartphone className="h-6 w-6 text-purple-500" />
             <h1 className="text-3xl font-bold">Client-Side Rendering (CSR)</h1>
           </div>
-          <p className="mb-6 text-lg text-muted-foreground">
-            This page demonstrates Client-Side Rendering. The page loads immediately, then
-            JavaScript calls external API to fetch and display data dynamically.
+          <p className="text-muted-foreground mb-6 text-lg">
+            This page demonstrates Client-Side Rendering. The page loads
+            immediately, then JavaScript calls external API to fetch and display
+            data dynamically.
           </p>
 
           <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -123,7 +137,9 @@ export default function CSRPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-green-600">Very Fast</p>
-                <p className="text-xs text-muted-foreground">Empty shell loads instantly</p>
+                <p className="text-muted-foreground text-xs">
+                  Empty shell loads instantly
+                </p>
               </CardContent>
             </Card>
 
@@ -136,17 +152,23 @@ export default function CSRPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-blue-600">Dynamic</p>
-                <p className="text-xs text-muted-foreground">External API called after page load</p>
+                <p className="text-muted-foreground text-xs">
+                  External API called after page load
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Interactivity</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Interactivity
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-green-600">Excellent</p>
-                <p className="text-xs text-muted-foreground">Rich user interactions</p>
+                <p className="text-muted-foreground text-xs">
+                  Rich user interactions
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -169,8 +191,10 @@ export default function CSRPage() {
                         ? 'Mock Data'
                         : 'Connected'}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  {isUsingMockData ? 'Showing demo data' : 'Data fetched from external API'}
+                <p className="text-muted-foreground text-sm">
+                  {isUsingMockData
+                    ? 'Showing demo data'
+                    : 'Data fetched from external API'}
                 </p>
               </div>
             </div>
@@ -187,7 +211,9 @@ export default function CSRPage() {
                 size="sm"
                 className="flex items-center gap-2"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                />
                 {isUsingMockData ? 'Try API' : 'Refresh'}
               </Button>
             </div>
@@ -208,14 +234,16 @@ export default function CSRPage() {
 
           {error && !isUsingMockData && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-6">
-              <h3 className="mb-2 font-semibold text-red-800">API Connection Failed</h3>
+              <h3 className="mb-2 font-semibold text-red-800">
+                API Connection Failed
+              </h3>
               <p className="mb-4 text-sm text-red-600">
                 Could not connect to the backend API: {error.message}
               </p>
               <div className="rounded border border-blue-200 bg-blue-50 p-3">
                 <p className="mb-2 text-xs text-blue-800">
-                  <strong>Frontend-Only Setup:</strong> This is expected when running without a
-                  backend.
+                  <strong>Frontend-Only Setup:</strong> This is expected when
+                  running without a backend.
                 </p>
                 <div className="flex gap-2">
                   <Button onClick={handleRefresh} size="sm" variant="outline">
@@ -244,16 +272,19 @@ export default function CSRPage() {
                 <CardHeader>
                   <CardTitle className="text-lg">{post.title}</CardTitle>
                   <CardDescription>
-                    By {post.author.name} • {formatDate(new Date(post.createdAt))} •{' '}
+                    By {post.author.name} •{' '}
+                    {formatDate(new Date(post.createdAt))} •{' '}
                     {post.category?.name || 'Uncategorized'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="mb-4 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground mb-4 text-sm">
                     {post.content?.substring(0, 150)}...
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Views: {post.viewCount}</span>
+                    <span className="text-muted-foreground text-xs">
+                      Views: {post.viewCount}
+                    </span>
                     <Button variant="outline" size="sm">
                       Read More
                     </Button>
@@ -266,14 +297,16 @@ export default function CSRPage() {
           {isUsingMockData && (
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
               <p className="text-sm text-blue-800">
-                <strong>Demo Mode:</strong> You're viewing mock data. In production, this would be
-                real data from your backend API.
+                <strong>Demo Mode:</strong> You&#39;re viewing mock data. In
+                production, this would be real data from your backend API.
               </p>
             </div>
           )}
 
-          <div className="mt-8 rounded-lg bg-muted p-4">
-            <h3 className="mb-2 font-semibold">How CSR Works in Frontend-Only Setup:</h3>
+          <div className="bg-muted mt-8 rounded-lg p-4">
+            <h3 className="mb-2 font-semibold">
+              How CSR Works in Frontend-Only Setup:
+            </h3>
             <ol className="list-inside list-decimal space-y-1 text-sm">
               <li>Empty HTML shell loads immediately from CDN</li>
               <li>JavaScript bundle downloads and executes</li>

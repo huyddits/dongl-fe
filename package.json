@@ -11,7 +11,8 @@
     "type-check": " tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui --watch"
+    "test:ui": "vitest --ui --watch",
+    "prettier": "prettier --write \"**/(*.{js,ts,tsx,css,cjs,mjs,json})\""
   },
   "version": "0.1.0",
   "dependencies": {

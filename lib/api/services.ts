@@ -104,7 +104,10 @@ export const postsService = {
   },
 
   // Update post
-  async updatePost(id: string, data: UpdatePostData): Promise<ApiResponse<Post>> {
+  async updatePost(
+    id: string,
+    data: UpdatePostData
+  ): Promise<ApiResponse<Post>> {
     return apiClient.put<Post>(`/api/posts/${id}`, data)
   },
 
@@ -122,7 +125,10 @@ export const postsService = {
 // Users API Service
 export const usersService = {
   // Get all users
-  async getUsers(params?: { page?: number; limit?: number }): Promise<ApiResponse<User[]>> {
+  async getUsers(params?: {
+    page?: number
+    limit?: number
+  }): Promise<ApiResponse<User[]>> {
     return apiClient.get<User[]>('/api/users', params)
   },
 
@@ -165,12 +171,19 @@ export const categoriesService = {
   },
 
   // Create category
-  async createCategory(data: { name: string; description?: string; slug: string }): Promise<ApiResponse<Category>> {
+  async createCategory(data: {
+    name: string
+    description?: string
+    slug: string
+  }): Promise<ApiResponse<Category>> {
     return apiClient.post<Category>('/api/categories', data)
   },
 
   // Update category
-  async updateCategory(id: string, data: Partial<Category>): Promise<ApiResponse<Category>> {
+  async updateCategory(
+    id: string,
+    data: Partial<Category>
+  ): Promise<ApiResponse<Category>> {
     return apiClient.put<Category>(`/api/categories/${id}`, data)
   },
 
@@ -193,7 +206,10 @@ export const tagsService = {
   },
 
   // Create tag
-  async createTag(data: { name: string; slug: string }): Promise<ApiResponse<Tag>> {
+  async createTag(data: {
+    name: string
+    slug: string
+  }): Promise<ApiResponse<Tag>> {
     return apiClient.post<Tag>('/api/tags', data)
   },
 
@@ -211,29 +227,42 @@ export const tagsService = {
 // Auth API Service
 export const authService = {
   // Login
-  async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
-    const response = await apiClient.post<{ user: User; token: string }>('/api/auth/login', {
-      email,
-      password,
-    })
-    
+  async login(
+    email: string,
+    password: string
+  ): Promise<ApiResponse<{ user: User; token: string }>> {
+    const response = await apiClient.post<{ user: User; token: string }>(
+      '/api/auth/login',
+      {
+        email,
+        password,
+      }
+    )
+
     // Set auth token after successful login
     if (response.data.token) {
       apiClient.setAuthToken(response.data.token)
     }
-    
+
     return response
   },
 
   // Register
-  async register(data: { email: string; password: string; name: string }): Promise<ApiResponse<{ user: User; token: string }>> {
-    const response = await apiClient.post<{ user: User; token: string }>('/api/auth/register', data)
-    
+  async register(data: {
+    email: string
+    password: string
+    name: string
+  }): Promise<ApiResponse<{ user: User; token: string }>> {
+    const response = await apiClient.post<{ user: User; token: string }>(
+      '/api/auth/register',
+      data
+    )
+
     // Set auth token after successful registration
     if (response.data.token) {
       apiClient.setAuthToken(response.data.token)
     }
-    
+
     return response
   },
 
@@ -249,36 +278,50 @@ export const authService = {
 
   // Refresh token
   async refreshToken(): Promise<ApiResponse<{ token: string }>> {
-    const response = await apiClient.post<{ token: string }>('/api/auth/refresh')
-    
+    const response = await apiClient.post<{ token: string }>(
+      '/api/auth/refresh'
+    )
+
     if (response.data.token) {
       apiClient.setAuthToken(response.data.token)
     }
-    
+
     return response
   },
 
   // Forgot password
-  async forgotPassword(email: string): Promise<ApiResponse<{ message: string }>> {
-    return apiClient.post<{ message: string }>('/api/auth/forgot-password', { email })
+  async forgotPassword(
+    email: string
+  ): Promise<ApiResponse<{ message: string }>> {
+    return apiClient.post<{ message: string }>('/api/auth/forgot-password', {
+      email,
+    })
   },
 
   // Reset password
-  async resetPassword(token: string, password: string): Promise<ApiResponse<{ message: string }>> {
-    return apiClient.post<{ message: string }>('/api/auth/reset-password', { token, password })
+  async resetPassword(
+    token: string,
+    password: string
+  ): Promise<ApiResponse<{ message: string }>> {
+    return apiClient.post<{ message: string }>('/api/auth/reset-password', {
+      token,
+      password,
+    })
   },
 }
 
 // Health API Service
 export const healthService = {
   // Check API health
-  async checkHealth(): Promise<ApiResponse<{
-    status: string
-    timestamp: string
-    environment: string
-    version: string
-    database: string
-  }>> {
+  async checkHealth(): Promise<
+    ApiResponse<{
+      status: string
+      timestamp: string
+      environment: string
+      version: string
+      database: string
+    }>
+  > {
     return apiClient.get('/api/health')
   },
 }

@@ -9,8 +9,6 @@ const config = {
     '@trivago/prettier-plugin-sort-imports',
     'prettier-plugin-tailwindcss',
   ],
-  attributeGroups: ['^(id|name)$', '^class$', '^v$', '^:$', '^@$', '^aria-'],
-  attributeSort: 'DESC',
 }
 
 export default config

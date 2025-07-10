@@ -375,11 +375,7 @@ export default function EditorPage() {
                   paste_data_images: true,
                   automatic_uploads: true,
                   file_picker_types: 'image',
-                  file_picker_callback: function (
-                    cb: any,
-                    value: any,
-                    meta: any
-                  ) {
+                  file_picker_callback: function (cb: any) {
                     const input = document.createElement('input')
                     input.setAttribute('type', 'file')
                     input.setAttribute('accept', 'image/*')

@@ -1,21 +1,28 @@
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowRight, Database, Server, Smartphone, Zap } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { config } from '@/lib/config'
+import { ArrowRight, Database, Server, Smartphone, Zap } from 'lucide-react'
+import Link from 'next/link'
 
 export default function HomePage() {
   return (
     <div className="container py-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+        <div className="mb-16 text-center">
+          <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl">
             Next.js Dongl Project
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            A production-ready Next.js template with TypeScript, PostgreSQL, Prisma, 
-            and GitLab CI/CD. Built for scalability and developer experience.
+          <p className="text-muted-foreground mx-auto mb-8 max-w-3xl text-xl">
+            A production-ready Next.js template with TypeScript, PostgreSQL,
+            Prisma, and GitLab CI/CD. Built for scalability and developer
+            experience.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Button asChild size="lg">
@@ -27,13 +34,13 @@ export default function HomePage() {
               <Link href="/about">Learn More</Link>
             </Button>
           </div>
-          <div className="mt-8 text-sm text-muted-foreground">
+          <div className="text-muted-foreground mt-8 text-sm">
             Environment: <span className="font-medium">{config.app.env}</span>
           </div>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -43,8 +50,8 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Fast initial page loads with server-rendered content. Perfect for SEO 
-                and dynamic data that changes frequently.
+                Fast initial page loads with server-rendered content. Perfect
+                for SEO and dynamic data that changes frequently.
               </CardDescription>
               <Button variant="outline" size="sm" className="mt-4" asChild>
                 <Link href="/examples/ssr">View SSR Example</Link>
@@ -61,7 +68,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Lightning-fast pages with ISR (Incremental Static Regeneration). 
+                Lightning-fast pages with ISR (Incremental Static Regeneration).
                 Pre-built at build time and cached globally.
               </CardDescription>
               <Button variant="outline" size="sm" className="mt-4" asChild>
@@ -79,7 +86,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Dynamic, interactive experiences with client-side data fetching. 
+                Dynamic, interactive experiences with client-side data fetching.
                 Perfect for dashboards and real-time applications.
               </CardDescription>
               <Button variant="outline" size="sm" className="mt-4" asChild>
@@ -90,64 +97,72 @@ export default function HomePage() {
         </div>
 
         {/* Tech Stack */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-8">Modern Tech Stack</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-8 text-3xl font-bold">Modern Tech Stack</h2>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-black text-white rounded-lg flex items-center justify-center mb-3">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-lg bg-black text-white">
                 <span className="font-bold">▲</span>
               </div>
               <h3 className="font-semibold">Next.js 14</h3>
-              <p className="text-sm text-muted-foreground">App Router</p>
+              <p className="text-muted-foreground text-sm">App Router</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-blue-600 text-white rounded-lg flex items-center justify-center mb-3">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-lg bg-blue-600 text-white">
                 <span className="font-bold">TS</span>
               </div>
               <h3 className="font-semibold">TypeScript</h3>
-              <p className="text-sm text-muted-foreground">Type Safety</p>
+              <p className="text-muted-foreground text-sm">Type Safety</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-green-600 text-white rounded-lg flex items-center justify-center mb-3">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-lg bg-green-600 text-white">
                 <Database className="h-8 w-8" />
               </div>
               <h3 className="font-semibold">PostgreSQL</h3>
-              <p className="text-sm text-muted-foreground">+ Prisma ORM</p>
+              <p className="text-muted-foreground text-sm">+ Prisma ORM</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-orange-500 text-white rounded-lg flex items-center justify-center mb-3">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-lg bg-orange-500 text-white">
                 <span className="font-bold">GL</span>
               </div>
               <h3 className="font-semibold">GitLab CI/CD</h3>
-              <p className="text-sm text-muted-foreground">Auto Deploy</p>
+              <p className="text-muted-foreground text-sm">Auto Deploy</p>
             </div>
           </div>
         </div>
 
         {/* Environment Info */}
-        <Card className="max-w-2xl mx-auto">
+        <Card className="mx-auto max-w-2xl">
           <CardHeader>
             <CardTitle>Environment Configuration</CardTitle>
             <CardDescription>
-              This project supports multiple environments with proper configuration management.
+              This project supports multiple environments with proper
+              configuration management.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="font-medium">Current Environment:</span>
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  config.app.env === 'production' ? 'bg-green-100 text-green-800' :
-                  config.app.env === 'staging' ? 'bg-yellow-100 text-yellow-800' :
-                  config.app.env === 'uat' ? 'bg-blue-100 text-blue-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
+                <span
+                  className={`rounded px-2 py-1 text-xs font-medium ${
+                    config.app.env === 'production'
+                      ? 'bg-green-100 text-green-800'
+                      : config.app.env === 'staging'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : config.app.env === 'uat'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
                   {config.app.env.toUpperCase()}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">Version:</span>
-                <span className="text-muted-foreground">{config.app.version}</span>
+                <span className="text-muted-foreground">
+                  {config.app.version}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">App URL:</span>
