@@ -1,4 +1,5 @@
 import { MainLayout } from '@/components/layout/main-layout'
+import { Toaster } from '@/components/ui/sonner'
 import { config } from '@/lib/config'
 import { ReactQueryProvider } from '@/providers'
 import type { Metadata } from 'next'
@@ -40,6 +41,7 @@ export default function RootLayout({
     <html lang="vi" suppressHydrationWarning className="light">
       <body className={inter.className}>
         <ReactQueryProvider>
+          <Toaster />
           <MainLayout>{children}</MainLayout>
         </ReactQueryProvider>
       </body>

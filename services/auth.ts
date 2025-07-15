@@ -1,16 +1,27 @@
-import { fetcher } from '@/libs'
+import { fetcher } from '@/lib'
+import { API_ENDPOINTS } from '@/utils/constants/api'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 export const AUTH_KEY = {
   GET_USER_INFO: 'GET_USER_INFO',
 }
 
-export const useLogin = (data: { email: string; password: string }) => {
+export const useLogin = () => {
   return useMutation({
-    mutationFn: async () =>
-      fetcher('/api/auth/login', {
+    mutationFn: async (data: any) =>
+      fetcher(`${API_ENDPOINTS.AUTH}/login`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: data,
+      }),
+  })
+}
+
+export const useRegister = () => {
+  return useMutation({
+    mutationFn: async (data: any) =>
+      fetcher(`${API_ENDPOINTS.AUTH}/register`, {
+        method: 'POST',
+        body: data,
       }),
   })
 }
@@ -18,7 +29,7 @@ export const useLogin = (data: { email: string; password: string }) => {
 export const useLogout = () => {
   return useMutation({
     mutationFn: async () =>
-      fetcher('/api/auth/logout', {
+      fetcher(`${API_ENDPOINTS.AUTH}/logout`, {
         method: 'POST',
       }),
   })
@@ -27,6 +38,6 @@ export const useLogout = () => {
 export const useGetUserInfo = () => {
   return useQuery({
     queryKey: [AUTH_KEY.GET_USER_INFO],
-    queryFn: async () => fetcher('/api/auth/user-info'),
+    queryFn: async () => fetcher(`${API_ENDPOINTS.AUTH}/user-info`),
   })
 }
