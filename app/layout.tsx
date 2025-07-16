@@ -1,9 +1,9 @@
-import { MainLayout } from '@/components/layout/main-layout'
 import { Toaster } from '@/components/ui/sonner'
 import { config } from '@/lib/config'
 import { ReactQueryProvider } from '@/providers'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { PropsWithChildren } from 'react'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -32,17 +32,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="vi" suppressHydrationWarning className="light">
       <body className={inter.className}>
         <ReactQueryProvider>
           <Toaster />
-          <MainLayout>{children}</MainLayout>
+          {children}
         </ReactQueryProvider>
       </body>
     </html>
