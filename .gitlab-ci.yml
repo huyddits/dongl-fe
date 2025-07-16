@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  NODE_VERSION: "18.17.0"
+  NODE_VERSION: "22.16.0"
   DOCKER_DRIVER: overlay2
 
 # Cache node_modules
@@ -16,6 +16,8 @@ cache:
 # Test stage
 test:
   stage: test
+  tags:
+    - dongl
   image: node:${NODE_VERSION}-alpine
   script:
     - npm ci
