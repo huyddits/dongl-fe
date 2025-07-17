@@ -59,6 +59,24 @@
   --color-grey-700: rgb(21, 21, 21);
   --color-grey-800: rgb(17, 17, 17);
   --color-grey-900: rgb(13, 13, 13);
+  --text-h1: 2rem;
+  --text-h1--line-height: 2.75rem;
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 2.5rem;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 2.25rem;
+  --text-h4: 1.25rem;
+  --text-h4--line-height: 2rem;
+  --text-xlarge: 1.125rem;
+  --text-xlarge--line-height: 1.75rem;
+  --text-large: 1rem;
+  --text-large--line-height: 1.5rem;
+  --text-medium: 0.875rem;
+  --text-medium--line-height: 1.25rem;
+  --text-small: 0.75rem;
+  --text-small--line-height: 1rem;
+  --text-xsmall: 0.625rem;
+  --text-xsmall--line-height: 0.875rem;
 }
 
 :root {

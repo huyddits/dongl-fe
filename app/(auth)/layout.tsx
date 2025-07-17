@@ -11,11 +11,11 @@ export default function AuthLayout({
       <div className="size-full overflow-auto">
         <div className="flex flex-col items-center">
           <Image
-            src="/logo-big.svg"
+            src="/image/logo-big.svg"
             alt="logo"
             width={260}
             height={48}
-            className="mt-10"
+            className="text-h1 mt-10"
           />
           <div className="z-10 container max-w-xl">{children}</div>
         </div>
