@@ -1,64 +1,67 @@
 import { Button } from '@/components/ui/button'
-import { ROUTES } from '@/lib/constants'
+import { Link as LinkIcon } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
+import React from 'react'
 
-export function Header() {
+export const Header = () => {
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center space-x-8">
-          <Link href={ROUTES.HOME} className="text-xl font-bold">
-            Dongl Project
+    <header className="">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between gap-4">
+          {/* Logo */}
+          <Link
+            className="relative flex h-6 w-[130px] shrink-0 items-center"
+            href="/"
+          >
+            <Image src="/image/logo-big.png" alt="logo" fill />
           </Link>
-          <nav className="hidden items-center space-x-6 md:flex">
+
+          {/* Navigation Links */}
+          <nav className="hidden items-center space-x-8 md:flex">
             <Link
-              href={ROUTES.HOME}
-              className="hover:text-primary text-sm font-medium"
+              href="/"
+              className="link-underline text-text-secondary hover:text-text-primary px-3 py-2 hover:font-bold"
             >
               Home
             </Link>
             <Link
-              href={ROUTES.ABOUT}
-              className="hover:text-primary text-sm font-medium"
+              href="/my-letter"
+              className="link-underline text-text-secondary hover:text-text-primary px-3 py-2 hover:font-bold"
             >
-              About
+              My Letter
             </Link>
             <Link
-              href={ROUTES.POSTS}
-              className="hover:text-primary text-sm font-medium"
+              href="/my-page"
+              className="link-underline text-text-secondary hover:text-text-primary px-3 py-2 hover:font-bold"
             >
-              Posts
+              My Page
             </Link>
-            <div className="group relative">
-              <button className="hover:text-primary text-sm font-medium">
-                Examples
-              </button>
-              <div className="bg-background invisible absolute top-full left-0 mt-1 w-48 rounded-md border opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
-                <Link
-                  href={ROUTES.SSR_EXAMPLE}
-                  className="hover:bg-accent block px-4 py-2 text-sm"
-                >
-                  SSR Example
-                </Link>
-                <Link
-                  href={ROUTES.SSG_EXAMPLE}
-                  className="hover:bg-accent block px-4 py-2 text-sm"
-                >
-                  SSG Example
-                </Link>
-                <Link
-                  href={ROUTES.CSR_EXAMPLE}
-                  className="hover:bg-accent block px-4 py-2 text-sm"
-                >
-                  CSR Example
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/services"
+              className="link-underline text-text-secondary hover:text-text-primary px-3 py-2 hover:font-bold"
+            >
+              Services
+            </Link>
+            <Link
+              href="/contact"
+              className="link-underline text-text-secondary hover:text-text-primary px-3 py-2 hover:font-bold"
+            >
+              Contact
+            </Link>
           </nav>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-3">
+            {/* Points Display */}
+            <Button icon={<LinkIcon />} variant="outline" size="lg">
+              15,541
+            </Button>
+
+            {/* Login Button */}
+            <Button size="lg">로그인</Button>
+          </div>
         </div>
-        <Button variant="outline" size="sm">
-          Login
-        </Button>
       </div>
     </header>
   )
