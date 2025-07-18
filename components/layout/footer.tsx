@@ -1,102 +1,78 @@
-import { config } from '@/lib/config'
 import Link from 'next/link'
 
-export function Footer() {
+export const Footer = () => {
   return (
-    <footer className="bg-background border-t">
-      <div className="container py-8">
+    <footer className="bg-blue-900 px-8 py-12 text-white">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Dongl Project</h3>
-            <p className="text-muted-foreground text-sm">
-              {config.app.description}
+          {/* Left Column - Company Info */}
+          <div className="col-span-4 space-y-4 md:col-span-4 lg:col-span-2">
+            <h2 className="text-2xl font-bold">DONGL</h2>
+            <p className="text-large mb-6 font-medium">
+              의미 있는 편지를 통해 마음을 이어주세요.
+              <br />
+              가장 필요한 사람들에게 사랑과 응원을 전합니다.
             </p>
-            <p className="text-muted-foreground text-xs">
-              Environment: {config.app.env}
-            </p>
+
+            <div className="space-y-2.5 text-sm text-white/60">
+              <p>부산광역시 사하구 하신중앙로 27번길 6</p>
+              <p>사업자등록번호: 401-17-62774</p>
+              <p>통신판매업번호: 2024-부산사하-0698</p>
+              <p>대표자: 황승민</p>
+              <p>Email: support@dongl.vn</p>
+              <p>Phone: +84 (0) 123 456 789</p>
+            </div>
           </div>
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Navigation</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/posts"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Posts
-                </Link>
-              </li>
-            </ul>
+
+          {/* Middle Column - Services */}
+          <div className="col-span-4 space-y-4 md:col-span-2 lg:col-span-1">
+            <h3 className="text-h3 mb-3 font-semibold">서비스</h3>
+            <div className="text-large space-y-3">
+              <Link href="#" className="link-underline block text-white/60">
+                온라인 편지쓰기
+              </Link>
+              <Link href="#" className="link-underline block text-white/60">
+                편지지 템플릿
+              </Link>
+              <Link href="#" className="link-underline block text-white/60">
+                교도소 편지
+              </Link>
+              <Link href="#" className="link-underline block text-white/60">
+                군인 편지
+              </Link>
+            </div>
           </div>
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Examples</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/examples/ssr"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  SSR Example
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/examples/ssg"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  SSG Example
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/examples/csr"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  CSR Example
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Support</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/help"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Help
-                </Link>
-              </li>
-            </ul>
+
+          {/* Right Column - Company */}
+          <div className="col-span-4 space-y-4 md:col-span-2 lg:col-span-1">
+            <h3 className="text-h3 mb-3 font-semibold">회사</h3>
+            <div className="text-large space-y-3">
+              <Link href="#" className="link-underline block text-white/60">
+                회사 소개
+              </Link>
+              <Link href="#" className="link-underline block text-white/60">
+                연락처
+              </Link>
+              <Link href="#" className="link-underline block text-white/60">
+                개인정보 처리방침
+              </Link>
+              <Link href="#" className="link-underline block text-white/60">
+                이용약관
+              </Link>
+            </div>
           </div>
         </div>
-        <div className="text-muted-foreground mt-8 border-t pt-8 text-center text-sm">
-          <p>&copy; 2024 Dongl Project. All rights reserved.</p>
+
+        {/* Bottom Section */}
+        <div className="mt-12 border-t border-white/30 pt-8">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <p className="text-medium font-medium text-white/60">
+              © 2025 동글 DongL. 모든 권리 보유.
+            </p>
+            <p className="text-medium font-medium text-white/60">
+              소중한 연결을 위한 정성 어린 제작
+            </p>
+          </div>
         </div>
       </div>
     </footer>
