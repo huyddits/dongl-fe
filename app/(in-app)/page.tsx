@@ -37,18 +37,18 @@ export default function LandingPage() {
   return (
     <div className="bg-white text-gray-800">
       <section className="bg-gradient-to-b from-purple-50 to-white py-20 text-center">
-        <div className="relative z-10 mt-[-40px] flex items-center justify-center">
+        <div className="relative z-10 -mt-10 flex items-center justify-center">
           <div className="border-primary text-primary relative z-10 rounded-full border bg-white px-6 py-2 text-sm font-medium shadow-md">
             <span className="text-primary flex items-center gap-2 text-sm font-medium">
-              <Heart className="h-4 w-4" />
+              <Heart className="size-4" />
               <span>50,000명 이상의 사용자들이 선택했어요</span>
-              <Heart className="h-4 w-4" />
+              <Heart className="size-4" />
             </span>
           </div>
 
-          <div className="via-primary absolute top-1/2 right-0 left-0 z-0 h-[1px] bg-gradient-to-r from-transparent to-transparent" />
+          <div className="via-primary absolute inset-x-0 top-1/2 z-0 h-px bg-gradient-to-r from-transparent to-transparent" />
         </div>
-        <div className="container mx-auto px-4 pt-10">
+        <div className="container px-4 pt-10">
           <h1 className="text-text-primary mb-4 text-[94px] leading-tight font-bold">
             마음을 이어줍니다
           </h1>
@@ -87,7 +87,7 @@ export default function LandingPage() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="container mx-auto px-4">
+        <div className="container px-4">
           <h2 className="text-text-primary mb-6 text-center text-[40px] font-semibold">
             우리의 <span className="text-primary">편지 템플릿</span>을
             만나보세요
@@ -109,7 +109,7 @@ export default function LandingPage() {
                 <p className="text-text-primary text-lg font-semibold">
                   인기 주제
                 </p>
-                <Button variant={'link'} size={'lg'} className="font-Regular">
+                <Button variant={'link'} size={'lg'}>
                   더 보기
                 </Button>
               </div>
@@ -132,7 +132,7 @@ export default function LandingPage() {
       </section>
 
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container px-4">
           <div className="text-center text-2xl">
             <h2 className="mb-4 text-[40px] font-semibold">
               고객님들이 저희를 <span className="text-primary">사랑해요!</span>
@@ -180,7 +180,7 @@ export default function LandingPage() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="container mx-auto px-4">
+        <div className="container px-4">
           <div className="text-center">
             <h2 className="mb-4 text-[40px] font-semibold">
               수많은 사람들의 <span className="text-primary">신뢰</span>를 얻다
@@ -197,9 +197,9 @@ export default function LandingPage() {
                 “Lorem Ipsum is simply dummy text of the printing and
                 typesetting industry.”
               </p>
-              <h2 className="text-2xl font-bold">Lorem Ipsum</h2>
-              <p className="text-sm">Sarah Johnson</p>
-              <p className="text-medium text-text-secondary font-regular">
+              <h2 className="text-text-primary text-[60px]">Lorem Ipsum</h2>
+              <p className="mb-2 font-semibold">Sarah Johnson</p>
+              <p className="text-text-secondary text-medium">
                 CEO of XYZ Company
               </p>
               <div className="mt-2 text-right">⭐⭐⭐⭐⭐</div>
