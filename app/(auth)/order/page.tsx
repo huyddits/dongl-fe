@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import Link from 'next/link'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -22,14 +21,12 @@ type SignupFormValues = {
   confirmPassword: string
 }
 
-export default function SignupPage() {
+export default function OrderLookupPage() {
   const form = useForm<SignupFormValues>({
     defaultValues: {
       name: '',
       mobile: '',
       email: '',
-      password: '',
-      confirmPassword: '',
     },
   })
 
@@ -38,14 +35,12 @@ export default function SignupPage() {
       form.setError('confirmPassword', { message: 'Passwords do not match' })
       return
     }
-    // handle signup logic here
-    // console.log(values)
   }
 
   return (
     <div className="mx-auto my-20 max-w-md rounded-lg border bg-white p-8 shadow-lg">
       <h1 className="mb-8 text-center text-2xl font-bold">
-        계정을 만들어 주세요
+        주문조회를 하시겠어요?
       </h1>
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -67,24 +62,7 @@ export default function SignupPage() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>이메일</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="예를 들어: abcd@gmail.com"
-                    autoComplete="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <FormField
             control={form.control}
             name="mobile"
@@ -111,25 +89,7 @@ export default function SignupPage() {
                 <FormLabel>비밀번호</FormLabel>
                 <FormControl>
                   <Input
-                    type="password"
-                    placeholder="**********"
-                    autoComplete="new-password"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>비밀번호 재확인</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
+                    type="임의의 숫자 4자리"
                     placeholder="**********"
                     autoComplete="new-password"
                     {...field}
@@ -140,16 +100,10 @@ export default function SignupPage() {
             )}
           />
           <Button type="submit" className="w-full">
-            Create Account
+            조회하기
           </Button>
         </form>
       </Form>
-      <div className="mt-4 text-center text-sm">
-        Already have an account?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline">
-          로그인
-        </Link>
-      </div>
     </div>
   )
 }
