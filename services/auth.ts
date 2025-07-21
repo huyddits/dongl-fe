@@ -1,5 +1,6 @@
 import { fetcher } from '@/lib'
 import { API_ENDPOINTS } from '@/utils/constants/api'
+import { ILoginFormValues } from '@/utils/types/auth'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 export const AUTH_KEY = {
@@ -7,11 +8,11 @@ export const AUTH_KEY = {
 }
 
 export const useLogin = () => {
-  return useMutation({
-    mutationFn: async (data: any) =>
+  return useMutation<any, Error, ILoginFormValues>({
+    mutationFn: async (body) =>
       fetcher(`${API_ENDPOINTS.AUTH}/login`, {
         method: 'POST',
-        body: data,
+        body,
       }),
   })
 }

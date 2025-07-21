@@ -3,4 +3,5 @@ export const ROUTES = {
   LOGIN: '/login',
   SIGNUP: '/signup',
   WELCOME: '/welcome',
+  FORGOT_PASSWORD: '/forgot-password',
 } as const
