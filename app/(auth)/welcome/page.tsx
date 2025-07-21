@@ -11,17 +11,17 @@ export default function WelcomePage() {
         이제 소중한 사람들에게 편지를 적어볼까요?
       </h1>
 
-      <Button className="mb-3 h-12 w-full bg-yellow-400 text-black hover:bg-yellow-300">
+      <Button className="mb-3 h-12 w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300">
         로그인
       </Button>
 
-      <Button className="mb-3 h-12 w-full bg-indigo-300 text-white hover:bg-indigo-400">
+      <Button className="mb-3 h-12 w-full bg-indigo-400 font-semibold text-white hover:bg-indigo-500">
         비회원 편지쓰기
       </Button>
 
       <Button
         variant="outline"
-        className="mb-6 h-12 w-full border border-indigo-300 text-indigo-500 hover:bg-indigo-50"
+        className="mb-6 h-12 w-full border border-indigo-300 font-semibold text-indigo-500 hover:bg-indigo-50"
       >
         마이페이지 / 비회원 주문 조회
       </Button>
@@ -43,7 +43,7 @@ export default function WelcomePage() {
         </a>
       </div>
 
-      <Link href="#" className="text-sm text-gray-500 underline">
+      <Link href="#" className="text-sm font-semibold text-indigo-500">
         동물 정보 자세히보기
       </Link>
     </div>
