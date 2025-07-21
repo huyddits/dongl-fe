@@ -17,10 +17,13 @@ export const metadata: Metadata = {
   keywords: ['Next.js', 'TypeScript', 'PostgreSQL', 'Prisma', 'Tailwind CSS'],
   authors: [{ name: 'Your Company' }],
   creator: 'Your Company',
+  icons: {
+    icon: '/icon.ico',
+    shortcut: '/icon.ico',
+    apple: '/icon.ico',
+  },
   openGraph: {
     type: 'website',
-    locale: 'vi_VN',
-    url: config.app.url,
     title: config.app.name,
     description: config.app.description,
     siteName: config.app.name,

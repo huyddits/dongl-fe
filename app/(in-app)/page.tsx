@@ -166,7 +166,6 @@ export default function HomePage() {
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">App URL:</span>
-                <span className="text-muted-foreground">{config.app.url}</span>
               </div>
             </div>
           </CardContent>

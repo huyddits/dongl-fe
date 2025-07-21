@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib'
+import { ROUTES } from '@/utils/constants/routes'
 import { LinkIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -35,9 +36,9 @@ export const Header = () => {
 
               <Link
                 className="relative flex h-6 w-[130px] shrink-0 items-center"
-                href="/"
+                href={ROUTES.HOME}
               >
-                <Image src="/image/logo-big.png" alt="logo" fill />
+                <Image src="/image/logo-big.png" alt="logo" fill priority />
               </Link>
             </div>
             {/* Desktop Navigation Links */}
@@ -81,8 +82,9 @@ export const Header = () => {
                 15,541
               </Button>
 
-              {/* Login Button */}
-              <Button size="lg">로그인</Button>
+              <Button size="lg" asChild>
+                <Link href={ROUTES.LOGIN}>로그인</Link>
+              </Button>
             </div>
           </div>
         </div>

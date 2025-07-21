@@ -32,6 +32,6 @@ export const config = {
      * - public folder files (images, icons, etc.)
      * - files ending with .js, .svg, .png, .jpg
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|image|sw.js|manifest.json).*)',
+    '/((?!api|_next/static|_next/image|icon.ico|image|sw.js|manifest.json).*)',
   ],
 }

@@ -1,11 +1,11 @@
 'use server'
 
+import { TOKEN_KEY } from '@/utils/constants/api'
+import { ROUTES } from '@/utils/constants/routes'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-const TOKEN_KEY = 'token'
-
-export const saveToken = async (value: string) => {
+export const saveTokenAndNavigateHome = async (value: string) => {
   const cookie = await cookies()
   cookie.set(TOKEN_KEY, value, {
     maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
@@ -13,11 +13,11 @@ export const saveToken = async (value: string) => {
     sameSite: 'lax',
     secure: true,
   })
-  redirect('/')
+  redirect(ROUTES.HOME)
 }
 
-export const deleteToken = async () => {
+export const deleteTokenAndNavigateLogin = async () => {
   const cookie = await cookies()
   cookie.delete(TOKEN_KEY)
-  redirect('/login')
+  redirect(ROUTES.LOGIN)
 }

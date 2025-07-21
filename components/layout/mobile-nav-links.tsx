@@ -6,6 +6,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { ROUTES } from '@/utils/constants/routes'
 import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -22,10 +23,10 @@ export function MobileNavLinks() {
           <SheetHeader>
             <SheetTitle>
               <Link
-                href="/"
+                href={ROUTES.HOME}
                 className="relative mt-1 flex h-6 w-[130px] items-center"
               >
-                <Image src="/image/logo-big.png" alt="logo" fill />
+                <Image src="/image/logo-big.png" alt="logo" fill priority />
               </Link>
             </SheetTitle>
           </SheetHeader>

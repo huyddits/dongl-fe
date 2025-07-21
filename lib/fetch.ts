@@ -1,10 +1,25 @@
+import { getCookie } from '@/lib/utils'
+import { deleteTokenAndNavigateLogin } from '@/utils/actions/token'
+import { TOKEN_KEY } from '@/utils/constants/api'
 import { ofetch } from 'ofetch'
 
-// Create a pre-configured API instance
 export const fetcher = ofetch.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.example.com',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  // You can add interceptors or other options here
+  onRequest({ options }) {
+    const token = getCookie(TOKEN_KEY)
+    if (token) {
+      options.headers.set('Authorization', `Bearer ${token}`)
+    }
+  },
+  async onResponseError({ response }) {
+    if (response.status === 401) {
+      await deleteTokenAndNavigateLogin()
+    }
+    throw new Error(
+      `Request failed with status ${response.status}: ${response.statusText}`
+    )
+  },
 })

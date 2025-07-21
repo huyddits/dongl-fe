@@ -1,21 +1,10 @@
 export const config = {
   app: {
-    name: 'Dongl Project',
-    description: 'A Next.js dongl project with TypeScript',
+    name: '동글',
+    description:
+      '인터넷서신 폐지? 동글 어플로 간편한 우체국 편지 예쁜 편지지로 지금 바로 마음을 전하세요.',
     version: '1.0.0',
     env: process.env.NEXT_PUBLIC_APP_ENV || 'development',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-    apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
-  },
-  auth: {
-    secret: process.env.NEXTAUTH_SECRET,
-    url: process.env.NEXTAUTH_URL,
-  },
-  external: {
-    apiKey: process.env.EXTERNAL_API_KEY,
-  },
-  logging: {
-    level: process.env.LOG_LEVEL || 'info',
   },
 } as const
 

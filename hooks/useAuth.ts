@@ -1,5 +1,8 @@
 import { useLogin, useRegister, useLogout } from '@/services/auth'
-import { deleteToken, saveToken } from '@/utils/actions/cookie'
+import {
+  deleteTokenAndNavigateLogin,
+  saveTokenAndNavigateHome,
+} from '@/utils/actions/token'
 
 export const useAuth = () => {
   const { mutateAsync: login, isPending: isLogging } = useLogin()
@@ -9,12 +12,12 @@ export const useAuth = () => {
   const onLogin = async () => {
     const cookie = await login({})
     if (cookie) {
-      return saveToken(cookie)
+      return saveTokenAndNavigateHome(cookie)
     }
   }
   const onLogout = async () => {
     await logout()
-    await deleteToken()
+    await deleteTokenAndNavigateLogin()
   }
 
   const onRegister = () => {
