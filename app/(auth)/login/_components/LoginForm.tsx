@@ -11,12 +11,8 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 const loginSchema = z.object({
-  phoneNumber: z
-    .string()
-    .min(10, LOGIN_MESSAGES.phone.min)
-    .max(15, LOGIN_MESSAGES.phone.max)
-    .regex(/^[0-9]+$/, LOGIN_MESSAGES.phone.regex),
-  password: z.string().min(6, LOGIN_MESSAGES.password.min),
+  phoneNumber: z.string().length(11, LOGIN_MESSAGES.phone.exact),
+  password: z.string().min(4, LOGIN_MESSAGES.password.min),
 })
 
 export function LoginForm() {
@@ -27,6 +23,7 @@ export function LoginForm() {
       phoneNumber: '',
       password: '',
     },
+    mode: 'onChange',
   })
 
   async function handleSubmit(values: ILoginFormValues) {

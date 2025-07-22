@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/sonner'
+import { useBoolean } from '@/hooks/useBoolean'
 import { useLogin, useRegister, useLogout } from '@/services/auth'
 import {
   deleteTokenAndNavigateLogin,
@@ -11,17 +12,24 @@ import { useRouter } from 'next/navigation'
 export const useAuth = () => {
   const { mutateAsync: login, isPending: isLogging } = useLogin()
   const { mutateAsync: register, isPending: isRegistering } = useRegister()
-  const { mutateAsync: logout, isPending: isLoggingOut } = useLogout()
+  const [isLoggingOut, { set: setIsLoggingOut }] = useBoolean()
   const router = useRouter()
   const onLogin = async (values: ILoginFormValues) => {
-    const cookie = await login(values)
-    if (cookie) {
-      return saveTokenAndNavigateHome(cookie)
-    }
+    void login(values, {
+      onSuccess: ({ data: { access_token, refresh_token } }) => {
+        if (access_token && refresh_token) {
+          return saveTokenAndNavigateHome(access_token, refresh_token)
+        } else toast.error('로그인에 실패했습니다')
+      },
+      onError: () => {
+        toast.error('로그인에 실패했습니다')
+      },
+    })
   }
   const onLogout = async () => {
-    await logout()
+    setIsLoggingOut(true)
     await deleteTokenAndNavigateLogin()
+    setIsLoggingOut(false)
   }
 
   const onRegister = (values: ISignupFormValues) => {

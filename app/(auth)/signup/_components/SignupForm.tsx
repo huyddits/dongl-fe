@@ -17,13 +17,9 @@ const signupSchema = z
   .object({
     name: z.string().min(1, LOGIN_MESSAGES.name.min),
     email: z.string().email(LOGIN_MESSAGES.email.invalid),
-    phoneNumber: z
-      .string()
-      .min(10, LOGIN_MESSAGES.phone.min)
-      .max(15, LOGIN_MESSAGES.phone.max)
-      .regex(/^[0-9]+$/, LOGIN_MESSAGES.phone.regex),
-    password: z.string().min(6, LOGIN_MESSAGES.password.min),
-    confirmPassword: z.string().min(6, LOGIN_MESSAGES.confirmPassword.min),
+    phoneNumber: z.string().length(11, LOGIN_MESSAGES.phone.exact),
+    password: z.string().min(4, LOGIN_MESSAGES.password.min),
+    confirmPassword: z.string().min(4, LOGIN_MESSAGES.confirmPassword.min),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: LOGIN_MESSAGES.confirmPassword.mismatch,

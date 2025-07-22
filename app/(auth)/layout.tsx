@@ -11,7 +11,7 @@ export default function AuthLayout({
       <div className="size-full overflow-auto">
         <div className="flex flex-col items-center">
           <Image
-            src="/image/logo-big.svg"
+            src="/image/logo-big.png"
             alt="logo"
             width={260}
             height={48}
@@ -22,11 +22,11 @@ export default function AuthLayout({
       </div>
       <div
         style={{ background: 'hsla(42, 72%, 52%, 1)' }}
-        className="absolute bottom-3/4 aspect-square w-1/2 rounded-full blur-[800px]"
+        className="absolute bottom-3/4 aspect-square w-1/2 min-w-[900px] rounded-full blur-[800px]"
       />
       <div
         style={{ background: 'hsla(230, 87%, 61%, 1)' }}
-        className="absolute top-3/4 right-0 aspect-square w-1/2 rounded-full blur-[800px]"
+        className="absolute top-3/4 right-0 aspect-square w-1/2 min-w-[900px] rounded-full blur-[800px]"
       />
     </div>
   )

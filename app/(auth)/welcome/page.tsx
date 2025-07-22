@@ -1,51 +1,62 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Apple, Play } from 'lucide-react'
+import { ROUTES } from '@/utils/constants/routes'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export default function WelcomePage() {
   return (
-    <div className="mx-auto mt-20 w-full max-w-md rounded-lg border bg-white p-8 text-center shadow-lg">
-      <h1 className="mb-8 text-lg font-semibold">
-        이제 소중한 사람들에게 편지를 적어볼까요?
+    <div>
+      <h1 className="text-h1 my-6 mb-8 text-center font-semibold">
+        환영합니다
       </h1>
+      <div className="rounded-2xl bg-white p-6 md:p-10">
+        <h2 className="text-h3 mb-6 text-center font-semibold">
+          이제 소중한 사람들에게 편지를 적어볼까요?
+        </h2>
 
-      <Button className="mb-3 h-12 w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300">
-        로그인
-      </Button>
+        <div className="space-y-6">
+          <Button asChild className="w-full" variant="secondary" size="lg">
+            <Link href={ROUTES.LOGIN}>로그인</Link>
+          </Button>
 
-      <Button className="mb-3 h-12 w-full bg-indigo-400 font-semibold text-white hover:bg-indigo-500">
-        비회원 편지쓰기
-      </Button>
+          <Button className="w-full" size="lg">
+            비회원 편지쓰기
+          </Button>
 
-      <Button
-        variant="outline"
-        className="mb-6 h-12 w-full border border-indigo-300 font-semibold text-indigo-500 hover:bg-indigo-50"
-      >
-        마이페이지 / 비회원 주문 조회
-      </Button>
+          <Button variant="outline" className="w-full" size="lg" asChild>
+            <Link href={ROUTES.GUEST_ORDER}>마이페이지 / 비회원 주문 조회</Link>
+          </Button>
+          <div className="flex gap-4">
+            <Button variant="outline" className="h-16 flex-1">
+              <Image
+                src="/image/google-play.svg"
+                alt="Google Play"
+                width={180}
+                height={36}
+              />
+            </Button>
+            <Button variant="outline" className="h-16 flex-1">
+              <Image
+                src="/image/apple-store.svg"
+                alt="Apple Store"
+                width={110}
+                height={36}
+              />
+            </Button>
+          </div>
 
-      <div className="mb-6 flex justify-center gap-4">
-        <a
-          href="#"
-          className="flex w-36 items-center justify-center gap-2 rounded border px-4 py-2 text-sm font-medium shadow"
-        >
-          <Play className="h-5 w-5" />
-          Google Play
-        </a>
-        <a
-          href="#"
-          className="flex w-36 items-center justify-center gap-2 rounded border px-4 py-2 text-sm font-medium shadow"
-        >
-          <Apple className="h-5 w-5" />
-          Apple
-        </a>
+          <div className="text-center">
+            <Link
+              href="#"
+              className="text-medium text-primary link-underline font-semibold"
+            >
+              동물 정보 자세히보기
+            </Link>
+          </div>
+        </div>
       </div>
-
-      <Link href="#" className="text-sm font-semibold text-indigo-500">
-        동물 정보 자세히보기
-      </Link>
     </div>
   )
 }

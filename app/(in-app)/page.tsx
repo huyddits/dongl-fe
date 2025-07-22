@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  MailStackIcon,
+  SearchLocationIcon,
+  MessageIcon,
+  HeroIllustration,
+} from '@/components/svg'
 import { Button } from '@/components/ui/button'
 import { Heart, Star } from 'lucide-react'
 import Image from 'next/image'
@@ -35,8 +41,8 @@ const testimonials = [
 
 export default function LandingPage() {
   return (
-    <div className="bg-white text-gray-800">
-      <section className="bg-gradient-to-b from-purple-50 to-white py-20 text-center">
+    <div className="bg-gradient-to-b from-purple-50 to-white">
+      <section className="py-20 text-center">
         <div className="relative z-10 -mt-10 flex items-center justify-center">
           <div className="border-primary text-primary relative z-10 rounded-full border bg-white px-6 py-2 text-sm font-medium shadow-md">
             <span className="text-primary flex items-center gap-2 text-sm font-medium">
@@ -59,8 +65,8 @@ export default function LandingPage() {
             감동과 감사의 메시지를 전하고 싶을 때, 쉽고 빠르게 전달하세요.
           </p>
           <div className="flex justify-center gap-4">
-            <Button size={'lg'}>작성 시작하기</Button>
-            <Button variant="outline" size={'lg'}>
+            <Button size={'xl'}>작성 시작하기</Button>
+            <Button variant="outline" size={'xl'}>
               후기 보기
             </Button>
           </div>
@@ -81,7 +87,7 @@ export default function LandingPage() {
           </div>
 
           <div className="shrink-0">
-            <Button size={'lg'}>포토툰 출연</Button>
+            <Button size={'xl'}>포토툰 출연</Button>
           </div>
         </div>
       </section>
@@ -95,13 +101,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 items-center gap-8 rounded md:grid-cols-2">
             <div className="flex items-center justify-center bg-gradient-to-b from-[#ECECF400] to-[#6879FF]">
-              <Image
-                src="/image/be2e9a59-8495-4031-bfa2-362791918a10 1.svg"
-                alt="logo"
-                width={534}
-                height={534}
-                className="rounded-full"
-              />
+              <HeroIllustration />
             </div>
 
             <div className="space-y-4">
@@ -109,7 +109,7 @@ export default function LandingPage() {
                 <p className="text-text-primary text-lg font-semibold">
                   인기 주제
                 </p>
-                <Button variant={'link'} size={'lg'}>
+                <Button variant={'link'} size={'xl'}>
                   더 보기
                 </Button>
               </div>
@@ -211,18 +211,10 @@ export default function LandingPage() {
                 <p className="text-text-primary text-sm font-semibold">국가</p>
               </div>
               <div className="flex items-center justify-center rounded p-4 shadow">
-                <Image
-                  src="/image/Vector.svg"
-                  alt="logo"
-                  width={100}
-                  height={100}
-                  className="text-h1"
-                />
+                <MailStackIcon width={100} height={100} className="text-h1" />
               </div>
               <div className="flex items-center justify-center rounded p-4 shadow">
-                <Image
-                  src="/image/fi_6792187.svg"
-                  alt="logo"
+                <SearchLocationIcon
                   width={100}
                   height={100}
                   className="text-h1"
@@ -247,13 +239,7 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex items-center justify-center rounded p-4 shadow">
-                <Image
-                  src="/image/Message_perspective_matte.svg"
-                  alt="logo"
-                  width={176}
-                  height={176}
-                  className="text-h1"
-                />
+                <MessageIcon width={176} height={176} className="text-h1" />
               </div>
             </div>
           </div>

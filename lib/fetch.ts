@@ -8,8 +8,8 @@ export const fetcher = ofetch.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  onRequest({ options }) {
-    const token = getCookie(TOKEN_KEY)
+  async onRequest({ options }) {
+    const token = await getCookie(TOKEN_KEY)
     if (token) {
       options.headers.set('Authorization', `Bearer ${token}`)
     }
