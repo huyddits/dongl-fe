@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="vi" suppressHydrationWarning className="light">
-      <body className={inter.className}>
+      <body className={`${inter.className} min-w-full`}>
         <ReactQueryProvider>
           <Toaster />
           {children}

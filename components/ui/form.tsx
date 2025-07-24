@@ -164,6 +164,8 @@ interface FormComposeProps<
   > {
   label: string
   render: (field: any) => React.ReactNode
+  className?: string
+  description?: string
 }
 
 const FormCompose = <
@@ -174,6 +176,8 @@ const FormCompose = <
   name,
   label,
   render,
+  className,
+  description,
   ...rest
 }: FormComposeProps<TFieldValues, TName>) => (
   <FormField
@@ -181,9 +185,10 @@ const FormCompose = <
     name={name}
     {...rest}
     render={({ field }) => (
-      <FormItem>
+      <FormItem className={className}>
         <FormLabel>{label}</FormLabel>
         <FormControl>{render(field)}</FormControl>
+        {description && <FormDescription>{description}</FormDescription>}
         <FormMessage />
       </FormItem>
     )}

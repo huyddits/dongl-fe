@@ -17,7 +17,7 @@ export default function WelcomePage() {
         </h2>
 
         <div className="space-y-6">
-          <Button asChild className="w-full" variant="secondary" size="lg">
+          <Button asChild className="w-full" color="secondary" size="lg">
             <Link href={ROUTES.LOGIN}>로그인</Link>
           </Button>
 

@@ -1,6 +1,6 @@
 import { toast } from '@/components/ui/sonner'
 import { useBoolean } from '@/hooks/useBoolean'
-import { useLogin, useRegister, useLogout } from '@/services/auth'
+import { useLogin, useRegister } from '@/services/auth'
 import {
   deleteTokenAndNavigateLogin,
   saveTokenAndNavigateHome,

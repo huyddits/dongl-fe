@@ -5,6 +5,7 @@ export const ROUTES = {
   WELCOME: '/welcome',
   FORGOT_PASSWORD: '/forgot-password',
   GUEST_ORDER: '/guest-order',
+  LETTER: '/letter',
 } as const
 
 export const AUTH_ROUTES = [
@@ -15,4 +16,4 @@ export const AUTH_ROUTES = [
   ROUTES.GUEST_ORDER,
 ]
 
-export const PUBLIC_ROUTES = [ROUTES.HOME, ...AUTH_ROUTES]
+export const PUBLIC_ROUTES = [ROUTES.HOME, ROUTES.LETTER, ...AUTH_ROUTES]

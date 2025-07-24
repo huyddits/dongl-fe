@@ -2,7 +2,29 @@ import { getServerCookie } from '@/utils/actions/cookies'
 import { QueryClient } from '@tanstack/react-query'
 import { clsx, type ClassValue } from 'clsx'
 import Cookies from 'js-cookie'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      'font-size': [
+        {
+          text: [
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'xlarge',
+            'large',
+            'medium',
+            'small',
+            'xsmall',
+          ],
+        },
+      ],
+    },
+  },
+})
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
