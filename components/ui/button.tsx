@@ -9,27 +9,125 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
-        destructive:
-          'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline:
-          'border bg-white border-primary hover:border-primary/60 shadow-xs hover:bg-blue-100/30 hover:text-primary:60 text-primary dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-        secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost:
-          'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-        link: 'text-primary underline-offset-4 hover:underline',
+        default: 'shadow-xs',
+        outline: 'border bg-white shadow-xs',
+        ghost: '',
+        link: 'underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-9 px-4 py-2 has-[>svg]:px-3',
-        sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
-        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        default: 'h-10 px-4 py-2 has-[>svg]:px-3',
+        sm: 'h-9 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
+        lg: 'h-14 rounded-md px-6 has-[>svg]:px-4',
+        xl: 'h-[62px] text-[22px] rounded-md px-6 has-[>svg]:px-4',
         icon: 'size-9',
       },
+      color: {
+        primary: '',
+        secondary: '',
+        tertiary: '',
+        destructive: '',
+        black: '',
+      },
     },
+    compoundVariants: [
+      {
+        variant: 'default',
+        color: 'primary',
+        className: 'bg-primary text-white hover:bg-primary/90',
+      },
+      {
+        variant: 'default',
+        color: 'secondary',
+        className: 'bg-secondary text-text-primary hover:bg-secondary/80',
+      },
+      {
+        variant: 'default',
+        color: 'tertiary',
+        className: 'bg-tertiary text-white hover:bg-tertiary/80',
+      },
+      {
+        variant: 'default',
+        color: 'destructive',
+        className: 'bg-error text-white hover:bg-error/90',
+      },
+      {
+        variant: 'default',
+        color: 'black',
+        className: 'bg-text-primary text-white hover:bg-text-primary/90',
+      },
+      {
+        variant: 'outline',
+        color: 'primary',
+        className:
+          'border-primary hover:border-primary/70 hover:bg-primary/10 text-primary hover:text-primary/70',
+      },
+      {
+        variant: 'outline',
+        color: 'secondary',
+        className:
+          'border-secondary hover:border-secondary/70 hover:bg-secondary/10 text-secondary hover:text-secondary/70',
+      },
+      {
+        variant: 'outline',
+        color: 'tertiary',
+        className:
+          'border-tertiary hover:border-tertiary/70 hover:bg-tertiary/10 text-tertiary hover:text-tertiary/70',
+      },
+      {
+        variant: 'outline',
+        color: 'black',
+        className:
+          'border-black hover:border-black/70 hover:bg-text-primary/10 text-text-primary hover:text-text-primary/70',
+      },
+      {
+        variant: 'link',
+        color: 'primary',
+        className: 'text-primary',
+      },
+      {
+        variant: 'link',
+        color: 'secondary',
+        className: 'text-secondary',
+      },
+      {
+        variant: 'link',
+        color: 'tertiary',
+        className: 'text-tertiary',
+      },
+      {
+        variant: 'link',
+        color: 'destructive',
+        className: 'text-error',
+      },
+      {
+        variant: 'link',
+        color: 'black',
+        className: 'text-text-primary',
+      },
+      {
+        variant: 'ghost',
+        color: 'primary',
+        className: 'hover:bg-primary/10 hover:text-primary',
+      },
+      {
+        variant: 'ghost',
+        color: 'secondary',
+        className: 'hover:bg-secondary/10 hover:text-secondary',
+      },
+      {
+        variant: 'ghost',
+        color: 'tertiary',
+        className: 'hover:bg-tertiary/10 hover:text-tertiary',
+      },
+      {
+        variant: 'ghost',
+        color: 'black',
+        className: 'hover:bg-text-primary/10 hover:text-text-primary',
+      },
+    ],
     defaultVariants: {
       variant: 'default',
+      color: 'primary',
       size: 'default',
     },
   }
@@ -38,6 +136,7 @@ const buttonVariants = cva(
 function Button({
   className,
   variant,
+  color,
   size,
   asChild = false,
   icon,
@@ -61,7 +160,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, color, size, className }))}
       disabled={loading || props.disabled}
       {...props}
     >

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 export const Footer = () => {
@@ -7,7 +8,15 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Left Column - Company Info */}
           <div className="col-span-4 space-y-4 md:col-span-4 lg:col-span-2">
-            <h2 className="text-2xl font-bold">DONGL</h2>
+            <h2 className="text-2xl font-bold">
+              <Image
+                src="/image/logo-big.png"
+                alt="logo"
+                className="invert"
+                width={130}
+                height={40}
+              />
+            </h2>
             <p className="text-large mb-6 font-medium">
               의미 있는 편지를 통해 마음을 이어주세요.
               <br />

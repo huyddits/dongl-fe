@@ -154,6 +154,47 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+// Inherit props from FormField, but require label and render
+interface FormComposeProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> extends Pick<
+    ControllerProps<TFieldValues, TName>,
+    'control' | 'name' | 'rules' | 'defaultValue' | 'shouldUnregister'
+  > {
+  label: string
+  render: (field: any) => React.ReactNode
+  className?: string
+  description?: string
+}
+
+const FormCompose = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  control,
+  name,
+  label,
+  render,
+  className,
+  description,
+  ...rest
+}: FormComposeProps<TFieldValues, TName>) => (
+  <FormField
+    control={control}
+    name={name}
+    {...rest}
+    render={({ field }) => (
+      <FormItem className={className}>
+        <FormLabel>{label}</FormLabel>
+        <FormControl>{render(field)}</FormControl>
+        {description && <FormDescription>{description}</FormDescription>}
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)
+
 export {
   useFormField,
   Form,
@@ -163,4 +204,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FormCompose,
 }

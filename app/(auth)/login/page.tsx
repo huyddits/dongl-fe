@@ -1,117 +1,62 @@
-'use client'
-
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { ROUTES } from '@/utils/constants/routes'
+import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { LoginForm } from './_components'
 
 export default function LoginPage() {
-  const form = useForm({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  })
-
-  function onSubmit(values: { email: string; password: string }) {
-    // handle login logic here
-    console.log(values)
-  }
-
   return (
-    <div className="">
-      <h1 className="my-6 mb-8 text-center text-2xl font-bold">회원가입</h1>
-      <Card className="px-10 py-8">
-        <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      autoComplete="email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter your password"
-                      autoComplete="current-password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <div className="mt-1 flex justify-end">
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm text-blue-600 hover:underline"
-                    >
-                      Forgot your password?
-                    </Link>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </form>
-        </Form>
-        <Button variant="outline" className="mt-4 w-full">
-          Guest Access
-        </Button>
-        <div className="mt-4 text-center text-sm">
-          Don&#39;t have an account?{' '}
-          <Link href="/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </Link>
+    <div>
+      <h1 className="text-h1 my-6 mb-8 text-center font-semibold">회원가입</h1>
+      <div className="rounded-2xl bg-white p-6 md:p-10">
+        <h2 className="text-h3 mb-6 text-center font-semibold">
+          로그인 해주세요
+        </h2>
+        <LoginForm />
+        <div className="mb-6 flex justify-center gap-3">
+          <Image
+            src="/image/kakao.svg"
+            alt="kakao"
+            width={60}
+            height={60}
+            className="cursor-pointer rounded-lg bg-[#FFEB3B]"
+          />
+          <Image
+            src="/image/naver.svg"
+            alt="kakao"
+            width={60}
+            height={60}
+            className="cursor-pointer rounded-lg bg-[#2DB400]"
+          />
+          <Image
+            src="/image/apple.svg"
+            alt="kakao"
+            width={60}
+            height={60}
+            className="cursor-pointer rounded-lg bg-black"
+          />
         </div>
-        <div className="my-6 flex items-center">
-          <div className="h-px flex-grow bg-gray-200" />
-          <span className="mx-3 text-xs text-gray-400">or log in with</span>
-          <div className="h-px flex-grow bg-gray-200" />
+        <div className="space-y-2">
+          <p className="text-medium text-grey-200 text-center">
+            계정이 없으신가요?&nbsp;
+            <Link
+              href={ROUTES.SIGNUP}
+              className="text-primary link-underline font-semibold"
+            >
+              회원가입 하기
+            </Link>
+          </p>
+          <p className="text-medium text-grey-200 text-center">
+            이미 계정이 있으신가요?&nbsp;
+            <Link
+              href={ROUTES.FORGOT_PASSWORD}
+              className="text-primary link-underline font-semibold"
+            >
+              비밀번호 찾기
+            </Link>
+          </p>
         </div>
-        <div className="flex justify-center gap-3">
-          <Button variant="outline" className="flex-1">
-            Google
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Kakao
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Naver
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Apple
-          </Button>
-        </div>
-      </Card>
+      </div>
     </div>
   )
 }

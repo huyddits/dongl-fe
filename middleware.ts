@@ -1,22 +1,26 @@
+import { TOKEN_KEY } from '@/utils/constants/api'
+import { AUTH_ROUTES, PUBLIC_ROUTES, ROUTES } from '@/utils/constants/routes'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value
+export async function middleware(request: NextRequest) {
+  const cookie = await cookies()
+  const token = cookie.get(TOKEN_KEY)
   const { pathname } = request.nextUrl
-  console.log(request.nextUrl.pathname)
-  // Define auth pages and protected routes
-  const isAuthPage = ['/login', '/signup'].includes(pathname)
-  const isPublicRoute = ['/login', '/signup', '/'].includes(pathname)
 
-  // If user has token and tries to access auth pages, redirect to home
-  if (token && isAuthPage) {
-    return NextResponse.redirect(new URL('/', request.url))
+  // Check if current path is an auth route
+  const isAuthRoute = AUTH_ROUTES.includes(pathname as any)
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname as any)
+
+  // If user has token and tries to access auth routes, redirect to home
+  if (token && isAuthRoute) {
+    return NextResponse.redirect(new URL(ROUTES.HOME, request.url))
   }
 
   // If user doesn't have token and tries to access protected routes
   if (!token && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL(ROUTES.LOGIN, request.url))
   }
 
   return NextResponse.next()
@@ -32,6 +36,6 @@ export const config = {
      * - public folder files (images, icons, etc.)
      * - files ending with .js, .svg, .png, .jpg
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|image|sw.js|manifest.json).*)',
+    '/((?!api|_next/static|_next/image|icon.ico|image|sw.js|manifest.json).*)',
   ],
 }

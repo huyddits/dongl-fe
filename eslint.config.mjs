@@ -12,6 +12,19 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'out/**',
+      'build/**',
+      'dist/**',
+      '.env*',
+      '*.config.js',
+      '*.config.mjs',
+      'public/**',
+    ],
+  },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     plugins: {
@@ -23,7 +36,7 @@ const eslintConfig = [
       '@typescript-eslint/no-explicit-any': 'off',
       'react-hooks/exhaustive-dep': 'off',
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',
         { ignoreRestSiblings: true, caughtErrors: 'none' },
       ],
       'prettier/prettier': ['warn', prettierConfig],

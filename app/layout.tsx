@@ -1,12 +1,12 @@
 import { Toaster } from '@/components/ui/sonner'
 import { config } from '@/lib/config'
-import { ReactQueryProvider } from '@/providers'
+import { ReactQueryProvider } from '@/providers/react-query'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { PropsWithChildren } from 'react'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin', 'latin-ext'], display: 'swap' })
 
 export const metadata: Metadata = {
   title: {
@@ -14,13 +14,16 @@ export const metadata: Metadata = {
     template: `%s | ${config.app.name}`,
   },
   description: config.app.description,
-  keywords: ['Next.js', 'TypeScript', 'PostgreSQL', 'Prisma', 'Tailwind CSS'],
-  authors: [{ name: 'Your Company' }],
-  creator: 'Your Company',
+  keywords: ['Next.js', 'Writing Letter'],
+  authors: [{ name: 'IceTea Software' }],
+  creator: 'IceTea Software',
+  icons: {
+    icon: '/icon.ico',
+    shortcut: '/icon.ico',
+    apple: '/icon.ico',
+  },
   openGraph: {
     type: 'website',
-    locale: 'vi_VN',
-    url: config.app.url,
     title: config.app.name,
     description: config.app.description,
     siteName: config.app.name,
@@ -35,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="vi" suppressHydrationWarning className="light">
-      <body className={inter.className}>
+      <body className={`${inter.className} min-w-full`}>
         <ReactQueryProvider>
           <Toaster />
           {children}
