@@ -100,15 +100,10 @@ export function FileUpload({
   }
 
   const acceptAttribute = acceptedTypes.join(',')
-  const allowedExtensions = acceptedTypes
-    .map((type) => type.split('/')[1].toUpperCase())
-    .join(' and ')
-  const maxSizeMB = Math.round(maxSize / (1024 * 1024))
 
   // Default labels
   const defaultUploadLabel = 'Upload a file by dragging or clicking on the area'
   const defaultDropLabel = 'Drop your file here!'
-  const defaultSupportText = `Supports ${allowedExtensions} up to ${maxSizeMB}MB`
 
   return (
     <div

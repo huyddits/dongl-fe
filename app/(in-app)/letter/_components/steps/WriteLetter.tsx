@@ -24,7 +24,6 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
   const {
     pages,
     currentPageIndex,
-    letterCount,
     fontSettings,
     textareaRefs,
     addNewPage,

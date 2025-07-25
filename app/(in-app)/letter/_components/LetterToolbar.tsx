@@ -24,7 +24,6 @@ interface LetterToolbarProps {
 }
 
 export const LetterToolbar = ({
-  pages,
   fontSettings,
   onAddPage,
   onFontFamilyChange,

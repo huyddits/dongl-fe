@@ -22,11 +22,8 @@ type Props = {
 }
 
 export function DocumentTransfer({ hidden, onBack, onContinue }: Props) {
-  const [documents, setDocuments] = useState<Document[]>([])
-  const [selectedDocument, setSelectedDocument] = useState<string | null>(null)
-
-  // Helper function to check if any document is selected
-  const hasSelectedDocument = !!selectedDocument
+  const [_, setDocuments] = useState<Document[]>([])
+  const [__, setSelectedDocument] = useState<string | null>(null)
 
   const handleFileUpload = (file: File) => {
     const newDocument: Document = {
@@ -40,37 +37,6 @@ export function DocumentTransfer({ hidden, onBack, onContinue }: Props) {
     // Auto-select the newly uploaded document
     setSelectedDocument(newDocument.id)
     toast.success('Document uploaded successfully')
-  }
-
-  const handleDocumentSelect = (documentId: string) => {
-    setSelectedDocument(selectedDocument === documentId ? null : documentId)
-  }
-
-  const removeDocument = (documentId: string) => {
-    setDocuments((prev) => prev.filter((doc) => doc.id !== documentId))
-    if (selectedDocument === documentId) {
-      setSelectedDocument(null)
-    }
-    toast.success('Document removed')
-  }
-
-  const downloadDocument = (doc: Document) => {
-    const url = URL.createObjectURL(doc.file)
-    const a = globalThis.document.createElement('a')
-    a.href = url
-    a.download = doc.name
-    globalThis.document.body.appendChild(a)
-    a.click()
-    globalThis.document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
   return (

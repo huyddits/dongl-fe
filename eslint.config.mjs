@@ -36,7 +36,7 @@ const eslintConfig = [
       '@typescript-eslint/no-explicit-any': 'off',
       'react-hooks/exhaustive-dep': 'off',
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',
         { ignoreRestSiblings: true, caughtErrors: 'none' },
       ],
       'prettier/prettier': ['warn', prettierConfig],

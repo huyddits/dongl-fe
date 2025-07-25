@@ -36,7 +36,6 @@ interface LetterEditorProps {
 export const LetterEditor = ({
   pages,
   onPagesChange,
-  currentPageIndex,
   onCurrentPageChange,
   letterPaper,
   fontSize = 16,
@@ -49,7 +48,7 @@ export const LetterEditor = ({
 }: LetterEditorProps) => {
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   const [isComposing, setIsComposing] = useState(false)
-  const [lastKeyEvent, setLastKeyEvent] = useState<KeyboardEvent | null>(null)
+  const [_, setLastKeyEvent] = useState<KeyboardEvent | null>(null)
 
   // Constants from PHP write2.php
   const PAPER_WIDTH = letterPaper.textWindowHorizontalSize || 400
