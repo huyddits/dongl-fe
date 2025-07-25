@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 
 interface Page {
   id: string
@@ -53,13 +53,28 @@ export const LetterEditor = ({
   const textareaRefs = externalTextareaRefs || localTextareaRefs
   const [isComposing, setIsComposing] = useState(false)
   const [lastKeyEvent, setLastKeyEvent] = useState<KeyboardEvent | null>(null)
-
-  // Constants from PHP write2.php
-  const PAPER_WIDTH = letterPaper.textWindowHorizontalSize || 400
-  const PAPER_HEIGHT = letterPaper.textWindowVerticalSize || 576
-  const LINE_HEIGHT = letterPaper.lineSpacing || 32
-  const TOP_PADDING = letterPaper.upperMarginPx || 60
-  const MAX_LINES = letterPaper.maxLines || 18
+  console.log(12312312)
+  // Constants from PHP write2.php - memoized to prevent infinite loops
+  const PAPER_WIDTH = useMemo(
+    () => letterPaper.textWindowHorizontalSize || 400,
+    [letterPaper.textWindowHorizontalSize]
+  )
+  const PAPER_HEIGHT = useMemo(
+    () => letterPaper.textWindowVerticalSize || 576,
+    [letterPaper.textWindowVerticalSize]
+  )
+  const LINE_HEIGHT = useMemo(
+    () => letterPaper.lineSpacing || 32,
+    [letterPaper.lineSpacing]
+  )
+  const TOP_PADDING = useMemo(
+    () => letterPaper.upperMarginPx || 60,
+    [letterPaper.upperMarginPx]
+  )
+  const MAX_LINES = useMemo(
+    () => letterPaper.maxLines || 18,
+    [letterPaper.maxLines]
+  )
 
   // Helper function to get caret coordinates (from textarea-caret-position.js)
   const getCaretCoordinates = useCallback(
@@ -122,10 +137,30 @@ export const LetterEditor = ({
   // Check if content exceeds max height (like PHP scrollHeight check)
   const exceedsMaxHeight = useCallback(
     (textarea: HTMLTextAreaElement): boolean => {
-      const maxHeight = Math.ceil(LINE_HEIGHT * MAX_LINES + 1)
-      return textarea.scrollHeight > maxHeight
+      // The textarea height is set to PAPER_HEIGHT, and has TOP_PADDING
+      // So the available text height is PAPER_HEIGHT - TOP_PADDING
+      // But we also need to account for bottom padding/margin
+      const availableTextHeight = PAPER_HEIGHT - TOP_PADDING
+      const exceeds = textarea.scrollHeight > PAPER_HEIGHT
+
+      // Debug logging
+      if (exceeds) {
+        console.log('Height exceeded:', {
+          scrollHeight: textarea.scrollHeight,
+          PAPER_HEIGHT,
+          availableTextHeight,
+          TOP_PADDING,
+          LINE_HEIGHT,
+          MAX_LINES,
+          calculatedMax: Math.ceil(LINE_HEIGHT * MAX_LINES + TOP_PADDING),
+          textareaHeight: textarea.style.height,
+          actualHeight: textarea.clientHeight,
+        })
+      }
+
+      return exceeds
     },
-    [LINE_HEIGHT, MAX_LINES]
+    [PAPER_HEIGHT, TOP_PADDING, LINE_HEIGHT, MAX_LINES]
   )
 
   // Get current line number (like PHP logic)
@@ -639,11 +674,46 @@ export const LetterEditor = ({
   // Apply styling when props change
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLetterForm()
+      textareaRefs.current.forEach((textarea) => {
+        if (!textarea) return
+
+        textarea.style.fontSize = `${fontSize}px`
+        textarea.style.fontFamily = fontFamily
+        textarea.style.fontWeight = fontWeight
+        textarea.style.textAlign = textAlign
+        textarea.style.color = textColor
+        textarea.style.letterSpacing = `${letterSpacing}px`
+        textarea.style.lineHeight = `${LINE_HEIGHT}px`
+        textarea.style.width = `${PAPER_WIDTH}px`
+        textarea.style.height = `${PAPER_HEIGHT}px`
+        textarea.style.paddingTop = `${TOP_PADDING}px`
+        textarea.style.padding = '0'
+        textarea.style.margin = '0'
+        textarea.style.border = 'none'
+        textarea.style.outline = 'none'
+        textarea.style.background = 'transparent'
+        textarea.style.resize = 'none'
+        textarea.style.overflow = 'hidden'
+        textarea.style.whiteSpace = 'pre-wrap'
+        textarea.style.wordWrap = 'break-word'
+        textarea.style.overflowWrap = 'break-word'
+      })
     }, 100)
 
     return () => clearTimeout(timer)
-  }, [setLetterForm, pages.length])
+  }, [
+    pages.length,
+    fontSize,
+    fontFamily,
+    fontWeight,
+    textAlign,
+    textColor,
+    letterSpacing,
+    LINE_HEIGHT,
+    PAPER_WIDTH,
+    PAPER_HEIGHT,
+    TOP_PADDING,
+  ])
 
   return (
     <div className="flex-1 p-6">
@@ -678,8 +748,8 @@ export const LetterEditor = ({
                 className="pointer-events-none absolute"
                 style={{
                   top: `${TOP_PADDING}px`,
-                  left: '40px',
-                  right: '40px',
+                  left: '36px',
+                  right: '36px',
                   backgroundColor: 'rgba(255, 255, 255, 0.3)',
                 }}
               >
@@ -690,6 +760,7 @@ export const LetterEditor = ({
                     style={{
                       height: `${LINE_HEIGHT}px`,
                       width: `${PAPER_WIDTH}px`,
+                      marginLeft: 4,
                     }}
                   />
                 ))}
