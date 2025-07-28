@@ -6,6 +6,10 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   GUEST_ORDER: '/guest-order',
   LETTER: '/letter',
+  MY_LETTER: '/my-letter',
+  SERVICES: '/services',
+  CONTACT: '/contact',
+  PROFILE: '/profile',
 } as const
 
 export const AUTH_ROUTES = [

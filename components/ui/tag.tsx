@@ -3,13 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import React from 'react'
 
 const tagVariants = cva(
-  'inline-flex items-center text-xs justify-center rounded-full px-2 py-0.5 font-medium h-5',
+  'inline-flex items-center text-xs justify-center rounded-full px-2 py-0.5 h-5',
   {
     variants: {
       color: {
         primary: 'bg-blue-100 text-blue-700',
-        success: 'bg-success/50 text-success',
-        error: 'bg-error/50 text-error',
+        success: 'bg-success/20 text-success',
+        error: 'bg-error/20 text-error',
       },
     },
     defaultVariants: {

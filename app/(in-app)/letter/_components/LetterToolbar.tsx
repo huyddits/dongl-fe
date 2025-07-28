@@ -1,8 +1,14 @@
 import { ColorSelect } from '@/components/svg'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
+import {
+  FontSizeEnum,
+  FontWeightEnum,
+  TextAlignEnum,
+  FontSettings,
+  Page,
+} from '@/utils/types/letter'
 import { PlusIcon, SmileIcon } from 'lucide-react'
-import { Page, FontSettings } from '../_hooks'
 import {
   AlignPicker,
   ColorPicker,
@@ -16,13 +22,13 @@ interface LetterToolbarProps {
   fontSettings: FontSettings
   onAddPage: () => void
   onFontFamilyChange: (fontFamily: string) => void
-  onFontSizeChange: (fontSize: number) => void
-  onFontWeightChange: (fontWeight: string) => void
-  onTextAlignChange: (textAlign: 'left' | 'center' | 'right') => void
+  onFontSizeChange: (fontSize: FontSizeEnum) => void
+  onFontWeightChange: (fontWeight: FontWeightEnum) => void
+  onTextAlignChange: (textAlign: TextAlignEnum) => void
   onColorChange: (color: string) => void
   onEmojiSelect: (emoji: string) => void
+  onSaveDraft?: () => void
 }
-
 export const LetterToolbar = ({
   fontSettings,
   onAddPage,
@@ -32,18 +38,14 @@ export const LetterToolbar = ({
   onTextAlignChange,
   onColorChange,
   onEmojiSelect,
+  onSaveDraft,
 }: LetterToolbarProps) => {
   const handleFontSizeSelect = (value: string) => {
-    const fontSize = parseFloat(value)
-    onFontSizeChange(fontSize)
+    onFontSizeChange(value as FontSizeEnum)
   }
 
   const handleFontSelect = (font: { name: string; value: string }) => {
     onFontFamilyChange(font.value)
-  }
-
-  const handleWeightChange = (weight: 500 | 800) => {
-    onFontWeightChange(weight.toString())
   }
 
   return (
@@ -58,13 +60,13 @@ export const LetterToolbar = ({
         <Select
           placeholder="글꼴 크기"
           className="w-2/5 max-w-36"
-          value={fontSettings.fontSize.toString()}
+          value={fontSettings.fontSize}
           onValueChange={handleFontSizeSelect}
           options={[
-            { label: '큰글씨', value: '14.8' },
-            { label: '중간', value: '12.8' },
-            { label: '작은', value: '10.8' },
-            { label: '매우작은', value: '8.8' },
+            { label: '큰글씨', value: FontSizeEnum.LARGE },
+            { label: '중간', value: FontSizeEnum.MEDIUM },
+            { label: '작은', value: FontSizeEnum.SMALL },
+            { label: '매우작은', value: FontSizeEnum.VERY_SMALL },
           ]}
         />
       </div>
@@ -72,8 +74,14 @@ export const LetterToolbar = ({
       {/* Right Controls */}
       <div className="ml-auto flex flex-1 items-center gap-3">
         <div className="ml-auto flex items-center gap-1">
-          <FontWeightPicker onWeightChange={handleWeightChange} />
-          <AlignPicker onAlignChange={onTextAlignChange} />
+          <FontWeightPicker
+            onChange={onFontWeightChange}
+            value={fontSettings.fontWeight}
+          />
+          <AlignPicker
+            onChange={onTextAlignChange}
+            value={fontSettings.textAlign}
+          />
           <ColorPicker value={fontSettings.color} onChange={onColorChange}>
             <Button variant="ghost" size="icon" icon={<ColorSelect />} />
           </ColorPicker>
@@ -81,9 +89,12 @@ export const LetterToolbar = ({
             <Button variant="ghost" size="icon" icon={<SmileIcon />} />
           </EmojiPicker>
         </div>
-        <Button variant="outline" color="tertiary">
-          임시저장
-        </Button>
+        {!!onSaveDraft && (
+          <Button variant="outline" color="tertiary" onClick={onSaveDraft}>
+            임시저장
+          </Button>
+        )}
+
         <Button icon={<PlusIcon />} onClick={onAddPage}>
           편지지 추가
         </Button>

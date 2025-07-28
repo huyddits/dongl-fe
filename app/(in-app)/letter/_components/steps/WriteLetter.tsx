@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { LetterPaperConfig } from '@/utils/types/letter'
 import { useLetterState } from '../../_hooks'
 import { LetterEditor, LetterToolbar } from '../index'
 
@@ -30,6 +30,7 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
     addNewPage,
     updatePages,
     setCurrentPageIndex,
+    movePages,
     handleLetterCountChange,
     updateFontFamily,
     updateFontSize,
@@ -37,7 +38,6 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
     updateTextAlign,
     updateColor,
     insertEmoji,
-    debugRefs,
   } = useLetterState()
 
   return (
@@ -52,14 +52,6 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
               간단한 단계로 아름다운 디지털 편지를 만들어보세요
             </p>
           </div>
-          <Button
-            size="xl"
-            variant="outline"
-            className="ml-auto"
-            color="tertiary"
-          >
-            Save to draft
-          </Button>
         </div>
 
         {/* Debug buttons */}
@@ -87,14 +79,16 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
             onPagesChange={updatePages}
             currentPageIndex={currentPageIndex}
             onCurrentPageChange={setCurrentPageIndex}
-            letterPaper={letterConfig as any}
+            letterPaper={letterConfig as LetterPaperConfig}
             fontSize={fontSettings.fontSize}
             fontFamily={fontSettings.fontFamily}
             fontWeight={fontSettings.fontWeight}
             textAlign={fontSettings.textAlign}
             textColor={fontSettings.color}
+            letterSpacing={0}
             onLetterCountChange={handleLetterCountChange}
             textareaRefs={textareaRefs}
+            movePages={movePages}
           />
         </div>
       </div>
@@ -102,10 +96,10 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
       {/* Action Buttons */}
       <div className="mt-8 flex gap-4">
         <Button variant="outline" size="xl" className="flex-1" onClick={onBack}>
-          back to previous page
+          이전
         </Button>
         <Button size="xl" className="flex-1" onClick={onContinue}>
-          Continue
+          등록
         </Button>
       </div>
     </div>
