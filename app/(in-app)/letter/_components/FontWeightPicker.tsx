@@ -1,37 +1,34 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
-
-type FontWeight = 500 | 800
+import { FontWeightEnum } from '@/utils/types/letter'
 
 interface FontWeightPickerProps {
-  onWeightChange?: (weight: FontWeight) => void
-  defaultWeight?: FontWeight
+  onChange?: (weight: FontWeightEnum) => void
+  value?: FontWeightEnum
   className?: string
 }
 
 const weightOptions = [
-  { value: 500 as FontWeight, label: '얇게' },
-  { value: 800 as FontWeight, label: '굵게' },
+  { value: FontWeightEnum.LIGHT, label: '얇게' },
+  { value: FontWeightEnum.BOLD, label: '굵게' },
 ]
 
 export function FontWeightPicker({
-  onWeightChange,
-  defaultWeight = 500,
+  onChange,
+  value = FontWeightEnum.LIGHT,
   className,
 }: FontWeightPickerProps) {
-  const [currentWeight, setCurrentWeight] = useState<FontWeight>(defaultWeight)
-
   const handleWeightToggle = () => {
-    const nextWeight = currentWeight === 500 ? 800 : 500
-    setCurrentWeight(nextWeight)
-    onWeightChange?.(nextWeight)
+    const nextWeight =
+      value === FontWeightEnum.LIGHT
+        ? FontWeightEnum.BOLD
+        : FontWeightEnum.LIGHT
+    onChange?.(nextWeight)
   }
 
   const currentLabel =
-    weightOptions.find((option) => option.value === currentWeight)?.label ||
-    '얇게'
+    weightOptions.find((option) => option.value === value)?.label || '얇게'
 
   return (
     <Button

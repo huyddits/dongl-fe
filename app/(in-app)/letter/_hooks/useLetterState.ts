@@ -1,88 +1,160 @@
-import { useState, useRef } from 'react'
-
-export interface Page {
-  id: string
-  content: string
-}
-
-export interface FontSettings {
-  fontFamily: string
-  fontSize: number
-  fontWeight: string
-  textAlign: 'left' | 'center' | 'right'
-  color: string
-}
+import {
+  FontSizeEnum,
+  FontWeightEnum,
+  TextAlignEnum,
+  FontSettings,
+  Page,
+} from '@/utils/types/letter'
+import { useState, useRef, useCallback } from 'react'
+import { v4 as uuid } from 'uuid'
 
 export const useLetterState = () => {
-  const [pages, setPages] = useState<Page[]>([{ id: '1', content: '' }])
-  const [currentPageIndex, setCurrentPageIndex] = useState(0)
+  const [pages, setPages] = useState<Page[]>([{ id: uuid(), content: '' }])
+  const [currentPageIndex, setCurrentPageIndexState] = useState(0)
   const [letterCount, setLetterCount] = useState(1)
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
 
-  // Font settings state
+  // Font settings state with proper default values
   const [fontSettings, setFontSettings] = useState<FontSettings>({
     fontFamily: 'Arial, sans-serif',
-    fontSize: 16,
-    fontWeight: 'normal',
-    textAlign: 'left',
+    fontSize: FontSizeEnum.LARGE,
+    fontWeight: FontWeightEnum.LIGHT,
+    textAlign: TextAlignEnum.LEFT,
     color: '#000000',
   })
 
-  const addNewPage = () => {
+  // Page management
+  const addNewPage = useCallback(() => {
     const newPage: Page = {
-      id: String(pages.length + 1),
+      id: uuid(),
       content: '',
     }
     setPages((prev) => [...prev, newPage])
-    setCurrentPageIndex(pages.length)
+    setCurrentPageIndexState(pages.length)
     setLetterCount(pages.length + 1)
 
     // Focus new page after state update
     setTimeout(() => {
       const newPageTextarea = textareaRefs.current[pages.length]
-      if (newPageTextarea) {
-        newPageTextarea.focus()
-      }
+      newPageTextarea?.focus()
     }, 0)
-  }
+  }, [pages.length])
 
-  const updatePages = (newPages: Page[]) => {
+  const updatePages = useCallback((newPages: Page[]) => {
     setPages(newPages)
     setLetterCount(newPages.length)
-  }
+  }, [])
 
-  const handleLetterCountChange = (count: number) => {
+  const setCurrentPageIndex = useCallback((index: number) => {
+    setCurrentPageIndexState(index)
+  }, [])
+
+  const movePages = useCallback((dragIndex: number, hoverIndex: number) => {
+    setPages((prevPages) => {
+      const newPages = [...prevPages]
+      const draggedPage = newPages[dragIndex]
+
+      // Remove the dragged page and insert it at the new position
+      newPages.splice(dragIndex, 1)
+      newPages.splice(hoverIndex, 0, draggedPage)
+
+      return newPages
+    })
+
+    // Update current page index if it was affected by the move
+    setCurrentPageIndexState((prevIndex) => {
+      if (prevIndex === dragIndex) {
+        return hoverIndex
+      } else if (prevIndex > dragIndex && prevIndex <= hoverIndex) {
+        return prevIndex - 1
+      } else if (prevIndex < dragIndex && prevIndex >= hoverIndex) {
+        return prevIndex + 1
+      }
+      return prevIndex
+    })
+  }, [])
+
+  const handleLetterCountChange = useCallback((count: number) => {
     setLetterCount(count)
-  }
+  }, [])
 
-  // Font control functions
-  const updateFontFamily = (fontFamily: string) => {
-    setFontSettings((prev) => ({ ...prev, fontFamily }))
-  }
+  // Font settings updates - using useCallback for performance
+  const updateFontFamily = useCallback(
+    (fontFamily: string) =>
+      setFontSettings((prev) => ({ ...prev, fontFamily })),
+    []
+  )
 
-  const updateFontSize = (fontSize: number) => {
-    setFontSettings((prev) => ({ ...prev, fontSize }))
-  }
+  const updateFontSize = useCallback(
+    (fontSize: FontSizeEnum) =>
+      setFontSettings((prev) => ({ ...prev, fontSize })),
+    []
+  )
 
-  const updateFontWeight = (fontWeight: string) => {
-    setFontSettings((prev) => ({ ...prev, fontWeight }))
-  }
+  const updateFontWeight = useCallback(
+    (fontWeight: FontWeightEnum) =>
+      setFontSettings((prev) => ({ ...prev, fontWeight })),
+    []
+  )
 
-  const updateTextAlign = (textAlign: 'left' | 'center' | 'right') => {
-    setFontSettings((prev) => ({ ...prev, textAlign }))
-  }
+  const updateTextAlign = useCallback(
+    (textAlign: TextAlignEnum) =>
+      setFontSettings((prev) => ({ ...prev, textAlign })),
+    []
+  )
 
-  const updateColor = (color: string) => {
-    setFontSettings((prev) => ({ ...prev, color }))
-  }
+  const updateColor = useCallback(
+    (color: string) => setFontSettings((prev) => ({ ...prev, color })),
+    []
+  )
 
-  const updateCurrentPageIndex = (index: number) => {
-    console.log('Updating current page index to:', index)
-    setCurrentPageIndex(index)
-  }
+  // Utility functions
+  const getCurrentTextarea = useCallback(
+    () => textareaRefs.current[currentPageIndex],
+    [currentPageIndex]
+  )
 
-  // Debug function to check refs
-  const debugRefs = () => {
+  const insertEmoji = useCallback(
+    (emoji: string) => {
+      const currentTextarea = getCurrentTextarea()
+      if (!currentTextarea) {
+        console.error('No textarea found for current page:', currentPageIndex)
+        return
+      }
+
+      currentTextarea.focus()
+
+      const start = currentTextarea.selectionStart || 0
+      const end = currentTextarea.selectionEnd || 0
+      const currentContent = pages[currentPageIndex].content || ''
+      const newContent =
+        currentContent.slice(0, start) + emoji + currentContent.slice(end)
+
+      // Update the page content
+      const newPages = [...pages]
+      newPages[currentPageIndex] = {
+        ...newPages[currentPageIndex],
+        content: newContent,
+      }
+
+      updatePages(newPages)
+
+      // Set cursor position after emoji and trigger change event
+      setTimeout(() => {
+        const newCursorPosition = start + emoji.length
+        currentTextarea.value = newContent
+        currentTextarea.focus()
+        currentTextarea.setSelectionRange(newCursorPosition, newCursorPosition)
+
+        // Trigger change event to ensure LetterEditor processes the content
+        const event = new Event('input', { bubbles: true })
+        currentTextarea.dispatchEvent(event)
+      }, 10)
+    },
+    [currentPageIndex, pages, getCurrentTextarea, updatePages]
+  )
+
+  const debugRefs = useCallback(() => {
     console.log('=== DEBUG REFS ===')
     console.log('Current page index:', currentPageIndex)
     console.log('Total pages:', pages.length)
@@ -96,69 +168,31 @@ export const useLetterState = () => {
         isFocused: ref === document.activeElement,
       }))
     )
-    console.log('==================')
-  }
-
-  // Emoji insertion function
-  const insertEmoji = (emoji: string) => {
-    debugRefs()
-
-    const currentTextarea = textareaRefs.current[currentPageIndex]
-    if (!currentTextarea) {
-      console.error('No textarea found for current page:', currentPageIndex)
-      return
-    }
-
-    // Focus textarea first to ensure we get correct cursor position
-    currentTextarea.focus()
-
-    // Get cursor position after focusing
-    const start = currentTextarea.selectionStart || 0
-    const end = currentTextarea.selectionEnd || 0
-    const currentContent = pages[currentPageIndex].content || ''
-
-    const newContent =
-      currentContent.slice(0, start) + emoji + currentContent.slice(end)
-
-    console.log('New content:', newContent)
-
-    // Update the page content
-    const newPages = [...pages]
-    newPages[currentPageIndex] = {
-      ...newPages[currentPageIndex],
-      content: newContent,
-    }
-
-    updatePages(newPages)
-
-    // Set cursor position after emoji and trigger change event
-    setTimeout(() => {
-      const newCursorPosition = start + emoji.length
-      currentTextarea.value = newContent
-      currentTextarea.focus()
-      currentTextarea.setSelectionRange(newCursorPosition, newCursorPosition)
-
-      // Trigger change event to ensure LetterEditor processes the content
-      const event = new Event('input', { bubbles: true })
-      currentTextarea.dispatchEvent(event)
-    }, 10)
-  }
+  }, [currentPageIndex, pages.length])
 
   return {
+    // State
     pages,
     currentPageIndex,
     letterCount,
-    textareaRefs,
     fontSettings,
+    textareaRefs,
+
+    // Page actions
     addNewPage,
     updatePages,
-    setCurrentPageIndex: updateCurrentPageIndex,
+    setCurrentPageIndex,
+    movePages,
     handleLetterCountChange,
+
+    // Font actions
     updateFontFamily,
     updateFontSize,
     updateFontWeight,
     updateTextAlign,
     updateColor,
+
+    // Utilities
     insertEmoji,
     debugRefs,
   }

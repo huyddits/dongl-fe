@@ -1,22 +1,15 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
-
-interface Page {
-  id: string
-  content: string
-}
-
-interface LetterPaperConfig {
-  category: 'Simple' | 'Theme' | 'Basic'
-  name: string
-  upperMarginPx: number
-  textWindowHorizontalSize: number
-  textWindowVerticalSize: number
-  lineSpacing: number
-  price: number
-  maxLines: number
-  imgOnebonPath?: string
-  imgBackPath?: string
-}
+import {
+  FontSizeEnum,
+  FontWeightEnum,
+  LetterPaperConfig,
+  Page,
+  TextAlignEnum,
+} from '@/utils/types/letter'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { CustomDragLayer } from './CustomDragLayer'
+import { DraggableLetterPage } from './DraggableLetterPage'
 
 interface LetterEditorProps {
   pages: Page[]
@@ -24,14 +17,15 @@ interface LetterEditorProps {
   currentPageIndex: number
   onCurrentPageChange: (index: number) => void
   letterPaper: LetterPaperConfig
-  fontSize?: number
-  fontFamily?: string
-  fontWeight?: string
-  textAlign?: 'left' | 'center' | 'right'
-  textColor?: string
-  letterSpacing?: number
+  fontSize: FontSizeEnum
+  fontFamily: string
+  fontWeight: FontWeightEnum
+  textAlign: TextAlignEnum
+  textColor: string
+  letterSpacing: number
   onLetterCountChange?: (count: number) => void
   textareaRefs?: React.MutableRefObject<(HTMLTextAreaElement | null)[]>
+  movePages?: (dragIndex: number, hoverIndex: number) => void
 }
 
 export const LetterEditor = ({
@@ -40,26 +34,41 @@ export const LetterEditor = ({
   currentPageIndex,
   onCurrentPageChange,
   letterPaper,
-  fontSize = 16,
-  fontFamily = 'Arial, sans-serif',
-  fontWeight = 'normal',
-  textAlign = 'left',
-  textColor = '#000000',
-  letterSpacing = 0,
+  fontSize,
+  fontFamily,
+  fontWeight,
+  textAlign,
+  textColor,
+  letterSpacing,
   onLetterCountChange,
   textareaRefs: externalTextareaRefs,
+  movePages,
 }: LetterEditorProps) => {
   const localTextareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   const textareaRefs = externalTextareaRefs || localTextareaRefs
   const [isComposing, setIsComposing] = useState(false)
   const [lastKeyEvent, setLastKeyEvent] = useState<KeyboardEvent | null>(null)
-
-  // Constants from PHP write2.php
-  const PAPER_WIDTH = letterPaper.textWindowHorizontalSize || 400
-  const PAPER_HEIGHT = letterPaper.textWindowVerticalSize || 576
-  const LINE_HEIGHT = letterPaper.lineSpacing || 32
-  const TOP_PADDING = letterPaper.upperMarginPx || 60
-  const MAX_LINES = letterPaper.maxLines || 18
+  // Constants from PHP write2.php - memoized to prevent infinite loops
+  const PAPER_WIDTH = useMemo(
+    () => letterPaper.textWindowHorizontalSize || 400,
+    [letterPaper.textWindowHorizontalSize]
+  )
+  const PAPER_HEIGHT = useMemo(
+    () => letterPaper.textWindowVerticalSize || 576,
+    [letterPaper.textWindowVerticalSize]
+  )
+  const LINE_HEIGHT = useMemo(
+    () => letterPaper.lineSpacing || 32,
+    [letterPaper.lineSpacing]
+  )
+  const TOP_PADDING = useMemo(
+    () => letterPaper.upperMarginPx || 60,
+    [letterPaper.upperMarginPx]
+  )
+  const MAX_LINES = useMemo(
+    () => letterPaper.maxLines || 18,
+    [letterPaper.maxLines]
+  )
 
   // Helper function to get caret coordinates (from textarea-caret-position.js)
   const getCaretCoordinates = useCallback(
@@ -122,10 +131,30 @@ export const LetterEditor = ({
   // Check if content exceeds max height (like PHP scrollHeight check)
   const exceedsMaxHeight = useCallback(
     (textarea: HTMLTextAreaElement): boolean => {
-      const maxHeight = Math.ceil(LINE_HEIGHT * MAX_LINES + 1)
-      return textarea.scrollHeight > maxHeight
+      // The textarea height is set to PAPER_HEIGHT, and has TOP_PADDING
+      // So the available text height is PAPER_HEIGHT - TOP_PADDING
+      // But we also need to account for bottom padding/margin
+      const availableTextHeight = PAPER_HEIGHT - TOP_PADDING
+      const exceeds = textarea.scrollHeight > PAPER_HEIGHT
+
+      // Debug logging
+      if (exceeds) {
+        console.log('Height exceeded:', {
+          scrollHeight: textarea.scrollHeight,
+          PAPER_HEIGHT,
+          availableTextHeight,
+          TOP_PADDING,
+          LINE_HEIGHT,
+          MAX_LINES,
+          calculatedMax: Math.ceil(LINE_HEIGHT * MAX_LINES + TOP_PADDING),
+          textareaHeight: textarea.style.height,
+          actualHeight: textarea.clientHeight,
+        })
+      }
+
+      return exceeds
     },
-    [LINE_HEIGHT, MAX_LINES]
+    [PAPER_HEIGHT, TOP_PADDING, LINE_HEIGHT, MAX_LINES]
   )
 
   // Get current line number (like PHP logic)
@@ -639,118 +668,86 @@ export const LetterEditor = ({
   // Apply styling when props change
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLetterForm()
+      textareaRefs.current.forEach((textarea) => {
+        if (!textarea) return
+
+        textarea.style.fontSize = `${fontSize}px`
+        textarea.style.fontFamily = fontFamily
+        textarea.style.fontWeight = fontWeight
+        textarea.style.textAlign = textAlign
+        textarea.style.color = textColor
+        textarea.style.letterSpacing = `${letterSpacing}px`
+        textarea.style.lineHeight = `${LINE_HEIGHT}px`
+        textarea.style.width = `${PAPER_WIDTH}px`
+        textarea.style.height = `${PAPER_HEIGHT}px`
+        textarea.style.paddingTop = `${TOP_PADDING}px`
+        textarea.style.padding = '0'
+        textarea.style.margin = '0'
+        textarea.style.border = 'none'
+        textarea.style.outline = 'none'
+        textarea.style.background = 'transparent'
+        textarea.style.resize = 'none'
+        textarea.style.overflow = 'hidden'
+        textarea.style.whiteSpace = 'pre-wrap'
+        textarea.style.wordWrap = 'break-word'
+        textarea.style.overflowWrap = 'break-word'
+      })
     }, 100)
 
     return () => clearTimeout(timer)
-  }, [setLetterForm, pages.length])
+  }, [
+    pages.length,
+    fontSize,
+    fontFamily,
+    fontWeight,
+    textAlign,
+    textColor,
+    letterSpacing,
+    LINE_HEIGHT,
+    PAPER_WIDTH,
+    PAPER_HEIGHT,
+    TOP_PADDING,
+  ])
 
   return (
-    <div className="flex-1 p-6">
-      <div className="space-y-6">
-        {pages.map((page, pageIndex) => (
-          <div key={page.id} className="relative">
-            {/* Letter Paper Container */}
-            <div
-              className="letterBox relative mx-auto bg-white shadow-lg"
-              style={{
-                width: `${PAPER_WIDTH + 80}px`,
-                minHeight: `${PAPER_HEIGHT + TOP_PADDING + 40}px`,
-                backgroundImage: letterPaper.imgOnebonPath
-                  ? `url(${letterPaper.imgOnebonPath})`
-                  : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                paddingTop: `${TOP_PADDING}px`,
-                paddingLeft: '40px',
-                paddingRight: '40px',
-                paddingBottom: '40px',
+    <DndProvider backend={HTML5Backend}>
+      <CustomDragLayer pages={pages} />
+      <div className="flex-1 p-6">
+        <div className="space-y-6">
+          {pages.map((page, pageIndex) => (
+            <DraggableLetterPage
+              key={page.id}
+              page={page}
+              pageIndex={pageIndex}
+              onMove={movePages || (() => {})}
+              currentPageIndex={currentPageIndex}
+              onCurrentPageChange={onCurrentPageChange}
+              letterPaper={letterPaper}
+              fontSize={fontSize}
+              fontFamily={fontFamily}
+              fontWeight={fontWeight}
+              textAlign={textAlign}
+              textColor={textColor}
+              letterSpacing={letterSpacing}
+              onTextChange={handleTextChange}
+              onCompositionStart={handleCompositionStart}
+              onCompositionEnd={handleCompositionEnd}
+              onKeyDown={handleKeyDown}
+              onKeyUp={handleKeyUp}
+              onPaste={handlePaste}
+              onFocus={handleFocus}
+              textareaRef={(el) => {
+                textareaRefs.current[pageIndex] = el
               }}
-            >
-              {/* Page number */}
-              <div className="absolute top-4 left-4 text-sm font-medium text-gray-600">
-                {pageIndex + 1}페이지
-              </div>
-
-              {/* Letter lines background */}
-              <div
-                className="pointer-events-none absolute"
-                style={{
-                  top: `${TOP_PADDING}px`,
-                  left: '40px',
-                  right: '40px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                }}
-              >
-                {Array.from({ length: MAX_LINES }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="border-b border-gray-400/50"
-                    style={{
-                      height: `${LINE_HEIGHT}px`,
-                      width: `${PAPER_WIDTH}px`,
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* Textarea for writing */}
-              <textarea
-                ref={(el) => {
-                  textareaRefs.current[pageIndex] = el
-                  // Apply styling immediately when ref is set
-                  if (el) {
-                    setTimeout(() => {
-                      el.style.fontSize = `${fontSize}px`
-                      el.style.fontFamily = fontFamily
-                      el.style.fontWeight = fontWeight
-                      el.style.textAlign = textAlign
-                      el.style.color = textColor
-                      el.style.letterSpacing = `${letterSpacing}px`
-                      el.style.lineHeight = `${LINE_HEIGHT}px`
-                      el.style.width = `${PAPER_WIDTH}px`
-                      el.style.height = `${PAPER_HEIGHT}px`
-                      el.style.paddingTop = `${TOP_PADDING}px`
-                      el.style.padding = '0'
-                      el.style.margin = '0'
-                      el.style.border = 'none'
-                      el.style.outline = 'none'
-                      el.style.background = 'transparent'
-                      el.style.resize = 'none'
-                      el.style.overflow = 'hidden'
-                      el.style.whiteSpace = 'pre-wrap'
-                      el.style.wordWrap = 'break-word'
-                      el.style.overflowWrap = 'break-word'
-                    }, 0)
-                  }
-                }}
-                value={page.content}
-                onChange={(e) => handleTextChange(pageIndex, e.target.value)}
-                onCompositionStart={() => handleCompositionStart(pageIndex)}
-                onCompositionEnd={(e) => handleCompositionEnd(pageIndex, e)}
-                onKeyDown={(e) => handleKeyDown(pageIndex, e)}
-                onKeyUp={() => handleKeyUp(pageIndex)}
-                onPaste={(e) => handlePaste(pageIndex, e)}
-                onFocus={() => handleFocus(pageIndex)}
-                className="letterContent relative z-10"
-                placeholder={pageIndex === 0 ? '편지를 작성해보세요...' : ''}
-                data-index={pageIndex}
-              />
-            </div>
-          </div>
-        ))}
-
-        {/* Add letter page button */}
-        <div className="text-center">
-          <button
-            onClick={() => addLetterForm()}
-            className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
-          >
-            편지지 추가 + ({letterPaper.price}원)
-          </button>
+              PAPER_WIDTH={PAPER_WIDTH}
+              PAPER_HEIGHT={PAPER_HEIGHT}
+              LINE_HEIGHT={LINE_HEIGHT}
+              TOP_PADDING={TOP_PADDING}
+              MAX_LINES={MAX_LINES}
+            />
+          ))}
         </div>
       </div>
-    </div>
+    </DndProvider>
   )
 }

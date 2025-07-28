@@ -1,14 +1,12 @@
 'use client'
 
-import {
-  MailStackIcon,
-  SearchLocationIcon,
-  MessageIcon,
-  HeroIllustration,
-} from '@/components/svg'
+import { MailStackIcon, SearchLocationIcon } from '@/components/svg'
 import { Button } from '@/components/ui/button'
+import { Tag } from '@/components/ui/tag'
+import { ROUTES } from '@/utils/constants/routes'
 import { Heart, Star } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const testimonials = [
   {
@@ -41,7 +39,7 @@ const testimonials = [
 
 export default function LandingPage() {
   return (
-    <div className="bg-gradient-to-b from-purple-50 to-white">
+    <div className="">
       <section className="py-20 text-center">
         <div className="relative z-10 -mt-10 flex items-center justify-center">
           <div className="border-primary text-primary relative z-10 rounded-full border bg-white px-6 py-2 text-sm font-medium shadow-md">
@@ -65,17 +63,19 @@ export default function LandingPage() {
             감동과 감사의 메시지를 전하고 싶을 때, 쉽고 빠르게 전달하세요.
           </p>
           <div className="flex justify-center gap-4">
-            <Button size={'xl'}>작성 시작하기</Button>
-            <Button variant="outline" size={'xl'}>
-              후기 보기
+            <Button size={'xl'} asChild>
+              <Link href={ROUTES.LETTER}>작성 시작하기</Link>
+            </Button>
+            <Button variant="outline" size={'xl'} asChild>
+              <Link href={ROUTES.MY_LETTER}>후기 보기</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto mt-8 mb-14 max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative mx-auto flex flex-col items-center justify-between rounded-lg p-6 text-left shadow-md sm:flex-row sm:items-center sm:p-8">
-          <div className="max-w-2xl">
+      <section className="container mx-auto mt-8 mb-14 flex gap-10 rounded-lg bg-white px-4 py-6 shadow-md sm:px-6 lg:px-8">
+        <div className="">
+          <div>
             <p className="text-text-primary mb-1 text-lg font-bold">
               연말을 위한 추천서비스
             </p>
@@ -85,11 +85,10 @@ export default function LandingPage() {
               주세요.
             </p>
           </div>
-
-          <div className="shrink-0">
-            <Button size={'xl'}>포토툰 출연</Button>
-          </div>
         </div>
+        <Button size={'xl'} className="ml-auto">
+          포토툰 출연
+        </Button>
       </section>
 
       <section className="bg-white py-16">
@@ -100,8 +99,13 @@ export default function LandingPage() {
           </h2>
 
           <div className="grid grid-cols-1 items-center gap-8 rounded md:grid-cols-2">
-            <div className="flex items-center justify-center bg-gradient-to-b from-[#ECECF400] to-[#6879FF]">
-              <HeroIllustration />
+            <div className="relative flex h-full items-center justify-center rounded-lg bg-gradient-to-b from-white to-blue-500/80">
+              <Image
+                src="/image/big-letter.png"
+                alt="편지 템플릿"
+                fill
+                sizes="300px"
+              />
             </div>
 
             <div className="space-y-4">
@@ -118,12 +122,27 @@ export default function LandingPage() {
                 .map((_, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between rounded border p-3 hover:shadow"
+                    className="flex items-center gap-3 rounded-lg border border-blue-100 px-4 py-3"
                   >
-                    <span className="text-gray-700">
-                      You Are So Precious To Me
+                    <Image
+                      src="/image/sample-letter-bg.png"
+                      alt="편지 템플릿"
+                      width={40}
+                      height={40}
+                      className="size-10 shrink-0 rounded-lg"
+                    />
+                    <div>
+                      <span className="text-text-primary truncate text-sm font-medium">
+                        You Are So Precious To Me
+                      </span>
+                      <div className="text-text-secondary flex items-center gap-2 text-sm">
+                        <Tag color="error">#Love</Tag>
+                        <Tag color="success">#Precious</Tag>
+                      </div>
+                    </div>
+                    <span className="text-text-primary ml-auto text-sm font-semibold">
+                      2004 used
                     </span>
-                    <span className="text-sm text-gray-500">2004 used</span>
                   </div>
                 ))}
             </div>
@@ -154,7 +173,7 @@ export default function LandingPage() {
                     alt={item.name}
                     width={40}
                     height={40}
-                    className="rounded-full"
+                    className="size-auto rounded-full"
                   />
                   <div>
                     <p className="text-text-primary text-sm font-semibold">
@@ -239,7 +258,12 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex items-center justify-center rounded p-4 shadow">
-                <MessageIcon width={176} height={176} className="text-h1" />
+                <Image
+                  alt="Message Icon"
+                  src="/image/message.png"
+                  width={176}
+                  height={176}
+                />
               </div>
             </div>
           </div>

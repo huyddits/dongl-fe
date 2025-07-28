@@ -15,7 +15,13 @@ export const Header = () => {
           className="relative flex h-6 w-[130px] shrink-0 items-center"
           href={ROUTES.HOME}
         >
-          <Image src="/image/logo-big.png" alt="logo" fill priority />
+          <Image
+            src="/image/logo-big.png"
+            alt="logo"
+            sizes="130px"
+            priority
+            fill
+          />
         </Link>
       </div>
 

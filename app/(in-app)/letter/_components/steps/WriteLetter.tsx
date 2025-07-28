@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { LetterPaperConfig } from '@/utils/types/letter'
 import { useLetterState } from '../../_hooks'
 import { LetterEditor, LetterToolbar } from '../index'
 
@@ -29,6 +30,7 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
     addNewPage,
     updatePages,
     setCurrentPageIndex,
+    movePages,
     handleLetterCountChange,
     updateFontFamily,
     updateFontSize,
@@ -36,7 +38,6 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
     updateTextAlign,
     updateColor,
     insertEmoji,
-    debugRefs,
   } = useLetterState()
 
   return (
@@ -51,34 +52,9 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
               간단한 단계로 아름다운 디지털 편지를 만들어보세요
             </p>
           </div>
-          <Button
-            size="xl"
-            variant="outline"
-            className="ml-auto"
-            color="tertiary"
-          >
-            Save to draft
-          </Button>
         </div>
 
         {/* Debug buttons */}
-        <div className="mt-2 flex gap-2">
-          <button
-            onClick={() => {
-              console.log('Test emoji insert')
-              insertEmoji('😀')
-            }}
-            className="rounded bg-blue-500 px-4 py-2 text-white"
-          >
-            Test Emoji Insert
-          </button>
-          <button
-            onClick={debugRefs}
-            className="rounded bg-green-500 px-4 py-2 text-white"
-          >
-            Debug Refs
-          </button>
-        </div>
       </div>
 
       <div className="rounded-2xl bg-white shadow-lg">
@@ -103,14 +79,16 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
             onPagesChange={updatePages}
             currentPageIndex={currentPageIndex}
             onCurrentPageChange={setCurrentPageIndex}
-            letterPaper={letterConfig as any}
+            letterPaper={letterConfig as LetterPaperConfig}
             fontSize={fontSettings.fontSize}
             fontFamily={fontSettings.fontFamily}
             fontWeight={fontSettings.fontWeight}
             textAlign={fontSettings.textAlign}
             textColor={fontSettings.color}
+            letterSpacing={0}
             onLetterCountChange={handleLetterCountChange}
             textareaRefs={textareaRefs}
+            movePages={movePages}
           />
         </div>
       </div>
@@ -118,10 +96,10 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
       {/* Action Buttons */}
       <div className="mt-8 flex gap-4">
         <Button variant="outline" size="xl" className="flex-1" onClick={onBack}>
-          back to previous page
+          이전
         </Button>
         <Button size="xl" className="flex-1" onClick={onContinue}>
-          Continue
+          등록
         </Button>
       </div>
     </div>

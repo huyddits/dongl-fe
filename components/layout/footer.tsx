@@ -12,7 +12,7 @@ export const Footer = () => {
               <Image
                 src="/image/logo-big.png"
                 alt="logo"
-                className="invert"
+                className="h-10 invert"
                 width={130}
                 height={40}
               />
