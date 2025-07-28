@@ -25,7 +25,7 @@ export const ProgressSteps = ({
 
   return (
     <div className={cn('w-full px-4 py-6', className)}>
-      <div className="relative flex items-center justify-between">
+      <div className="relative hidden items-center justify-between sm:flex">
         <div className="bg-grey-100 absolute top-2.5 right-6 left-6 h-1">
           <div
             className="bg-primary h-full transition-all duration-500 ease-in-out"
@@ -81,7 +81,7 @@ export const ProgressSteps = ({
       </div>
 
       {/* Mobile: Current Step Info */}
-      <div className="mt-6 sm:hidden">
+      <div className="sm:hidden">
         {currentStepIndex >= 0 && steps[currentStepIndex] && (
           <div
             className={cn(
@@ -89,9 +89,9 @@ export const ProgressSteps = ({
             )}
           >
             <div className={cn('text-primary mb-1 text-sm font-semibold')}>
-              Step {currentStepIndex + 1} of {steps.length}
+              단계 {currentStepIndex + 1} / {steps.length}
             </div>
-            <div className={cn('text-sm text-gray-100')}>
+            <div className={cn('text-text-secondary text-sm')}>
               {steps[currentStepIndex].label}
             </div>
           </div>

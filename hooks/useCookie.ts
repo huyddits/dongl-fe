@@ -4,22 +4,30 @@ import { useState, useEffect, useCallback } from 'react'
 /**
  * A hook that returns the value of a cookie
  * @param key The cookie key to read
- * @returns The value of the cookie
+ * @param isObject Whether the cookie value should be parsed as JSON object
+ * @returns The value of the cookie (parsed as JSON if isObject is true, otherwise raw string)
  */
-export function useCookie<T>(key: string): T | undefined {
+export function useCookie<T>(key: string, isObject?: boolean): T | undefined {
   // Get the stored value
   const getStoredValue = useCallback((): T | undefined => {
     try {
       if (typeof window === 'undefined') return undefined
 
       const item = Cookies.get(key)
-      // Parse stored json or return undefined if null
-      return item ? (JSON.parse(item) as T) : undefined
+      if (!item) return undefined
+
+      // If isObject is false, return the raw string value
+      if (!isObject) {
+        return item as T
+      }
+
+      // Parse stored json if isObject is true
+      return JSON.parse(item) as T
     } catch (error) {
       console.error(`Error reading cookie "${key}":`, error)
       return undefined
     }
-  }, [key])
+  }, [key, isObject])
 
   // State to store our value
   const [storedValue, setStoredValue] = useState<T | undefined>(getStoredValue)

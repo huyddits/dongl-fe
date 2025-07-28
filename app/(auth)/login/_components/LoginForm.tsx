@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 const loginSchema = z.object({
-  phoneNumber: z.string().length(11, LOGIN_MESSAGES.phone.exact),
+  phone_number: z.string().length(11, LOGIN_MESSAGES.phone.exact),
   password: z.string().min(4, LOGIN_MESSAGES.password.min),
 })
 
@@ -20,7 +20,7 @@ export function LoginForm() {
   const form = useForm<ILoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      phoneNumber: '',
+      phone_number: '',
       password: '',
     },
     mode: 'onChange',
@@ -35,7 +35,7 @@ export function LoginForm() {
       <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)}>
         <FormCompose
           control={form.control}
-          name="phoneNumber"
+          name="phone_number"
           label="휴대번호"
           render={(field) => (
             <Input

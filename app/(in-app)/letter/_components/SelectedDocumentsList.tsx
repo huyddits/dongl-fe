@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
-import { MinusIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react'
+import { MinusIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import Image from 'next/image'
 
 export function SelectedDocumentsList() {

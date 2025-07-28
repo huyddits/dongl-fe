@@ -1,112 +1,132 @@
-import {
-  FontSizeEnum,
-  FontWeightEnum,
-  TextAlignEnum,
-  FontSettings,
-  Page,
-} from '@/utils/types/letter'
-import { useState, useRef, useCallback } from 'react'
-import { v4 as uuid } from 'uuid'
+import { useWriteLetterStore } from '@/stores/useWriteLetterStore'
+import { Page, LetterPaperConfig } from '@/utils/types/letter'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 
 export const useLetterState = () => {
-  const [pages, setPages] = useState<Page[]>([{ id: uuid(), content: '' }])
+  const {
+    selectedTemplate,
+    writeLetterParams,
+    setContents,
+    updateContent,
+    addContent,
+    removeContent,
+    movePages: storeMovePages,
+    updateFontFamily,
+    updateFontSize,
+    updateFontWeight,
+    updateTextAlign,
+    updateColor,
+  } = useWriteLetterStore()
+
+  // Pages are now directly from store contents (already Page objects with UUIDs)
+  const pages = writeLetterParams.contents
+
+  // UI-only state (not sent to API)
   const [currentPageIndex, setCurrentPageIndexState] = useState(0)
-  const [letterCount, setLetterCount] = useState(1)
+  const [letterCount, setLetterCount] = useState(
+    writeLetterParams.contents.length
+  )
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
 
-  // Font settings state with proper default values
-  const [fontSettings, setFontSettings] = useState<FontSettings>({
-    fontFamily: 'Arial, sans-serif',
-    fontSize: FontSizeEnum.LARGE,
-    fontWeight: FontWeightEnum.LIGHT,
-    textAlign: TextAlignEnum.LEFT,
-    color: '#000000',
-  })
-
-  // Page management
-  const addNewPage = useCallback(() => {
-    const newPage: Page = {
-      id: uuid(),
-      content: '',
+  // Derive letter config from selected template using consistent keys
+  const letterConfig = useMemo(() => {
+    if (selectedTemplate) {
+      return {
+        id: selectedTemplate.id,
+        letter_category_id: selectedTemplate.letter_category_id,
+        name: selectedTemplate.name,
+        price: selectedTemplate.price,
+        thumbnail: selectedTemplate.thumbnail,
+        thumbnail_back: selectedTemplate.thumbnail_back,
+        thumbnail_original: selectedTemplate.thumbnail_original,
+        top_padding: selectedTemplate.top_padding,
+        context_width: selectedTemplate.context_width,
+        context_height: selectedTemplate.context_height,
+        context_line_height: selectedTemplate.context_line_height,
+        max_line: selectedTemplate.max_line,
+        sort_order: selectedTemplate.sort_order,
+        is_active: selectedTemplate.is_active,
+        count: selectedTemplate.count,
+        tags: selectedTemplate.tags,
+        created_at: selectedTemplate.created_at,
+        updated_at: selectedTemplate.updated_at,
+      }
     }
-    setPages((prev) => [...prev, newPage])
-    setCurrentPageIndexState(pages.length)
-    setLetterCount(pages.length + 1)
+
+    // Fallback to default config with same structure
+    return {
+      id: 0,
+      letter_category_id: 1,
+      name: '그린',
+      price: 1000,
+      thumbnail: '/image/sample-letter-bg.png',
+      thumbnail_back: '/image/sample-letter-bg.png',
+      thumbnail_original: '/image/sample-letter-bg.png',
+      top_padding: 54,
+      context_width: 462,
+      context_height: 431,
+      context_line_height: 24,
+      max_line: 18,
+      sort_order: 0,
+      is_active: true,
+      count: 0,
+      tags: null,
+      created_at: '',
+      updated_at: '',
+    }
+  }, [selectedTemplate])
+
+  // Update letter count when contents change
+  useEffect(() => {
+    setLetterCount(writeLetterParams.contents.length)
+  }, [writeLetterParams.contents.length])
+
+  // Page management - now works directly with store
+  const addNewPage = useCallback(() => {
+    addContent('')
+    setCurrentPageIndexState(writeLetterParams.contents.length)
 
     // Focus new page after state update
     setTimeout(() => {
-      const newPageTextarea = textareaRefs.current[pages.length]
+      const newPageTextarea =
+        textareaRefs.current[writeLetterParams.contents.length]
       newPageTextarea?.focus()
     }, 0)
-  }, [pages.length])
+  }, [addContent, writeLetterParams.contents.length])
 
-  const updatePages = useCallback((newPages: Page[]) => {
-    setPages(newPages)
-    setLetterCount(newPages.length)
-  }, [])
+  const updatePages = useCallback(
+    (newPages: Page[]) => {
+      setContents(newPages)
+    },
+    [setContents]
+  )
 
   const setCurrentPageIndex = useCallback((index: number) => {
     setCurrentPageIndexState(index)
   }, [])
 
-  const movePages = useCallback((dragIndex: number, hoverIndex: number) => {
-    setPages((prevPages) => {
-      const newPages = [...prevPages]
-      const draggedPage = newPages[dragIndex]
+  const movePages = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      storeMovePages(dragIndex, hoverIndex)
 
-      // Remove the dragged page and insert it at the new position
-      newPages.splice(dragIndex, 1)
-      newPages.splice(hoverIndex, 0, draggedPage)
-
-      return newPages
-    })
-
-    // Update current page index if it was affected by the move
-    setCurrentPageIndexState((prevIndex) => {
-      if (prevIndex === dragIndex) {
-        return hoverIndex
-      } else if (prevIndex > dragIndex && prevIndex <= hoverIndex) {
-        return prevIndex - 1
-      } else if (prevIndex < dragIndex && prevIndex >= hoverIndex) {
-        return prevIndex + 1
-      }
-      return prevIndex
-    })
-  }, [])
+      // Update current page index if it was affected by the move
+      setCurrentPageIndexState((prevIndex) => {
+        if (prevIndex === dragIndex) {
+          return hoverIndex
+        } else if (prevIndex > dragIndex && prevIndex <= hoverIndex) {
+          return prevIndex - 1
+        } else if (prevIndex < dragIndex && prevIndex >= hoverIndex) {
+          return prevIndex + 1
+        }
+        return prevIndex
+      })
+    },
+    [storeMovePages]
+  )
 
   const handleLetterCountChange = useCallback((count: number) => {
     setLetterCount(count)
   }, [])
-
-  // Font settings updates - using useCallback for performance
-  const updateFontFamily = useCallback(
-    (fontFamily: string) =>
-      setFontSettings((prev) => ({ ...prev, fontFamily })),
-    []
-  )
-
-  const updateFontSize = useCallback(
-    (fontSize: FontSizeEnum) =>
-      setFontSettings((prev) => ({ ...prev, fontSize })),
-    []
-  )
-
-  const updateFontWeight = useCallback(
-    (fontWeight: FontWeightEnum) =>
-      setFontSettings((prev) => ({ ...prev, fontWeight })),
-    []
-  )
-
-  const updateTextAlign = useCallback(
-    (textAlign: TextAlignEnum) =>
-      setFontSettings((prev) => ({ ...prev, textAlign })),
-    []
-  )
-
-  const updateColor = useCallback(
-    (color: string) => setFontSettings((prev) => ({ ...prev, color })),
-    []
-  )
 
   // Utility functions
   const getCurrentTextarea = useCallback(
@@ -126,18 +146,13 @@ export const useLetterState = () => {
 
       const start = currentTextarea.selectionStart || 0
       const end = currentTextarea.selectionEnd || 0
-      const currentContent = pages[currentPageIndex].content || ''
+      const currentPage = writeLetterParams.contents[currentPageIndex]
+      const currentContent = currentPage?.content || ''
       const newContent =
         currentContent.slice(0, start) + emoji + currentContent.slice(end)
 
-      // Update the page content
-      const newPages = [...pages]
-      newPages[currentPageIndex] = {
-        ...newPages[currentPageIndex],
-        content: newContent,
-      }
-
-      updatePages(newPages)
+      // Update the store content directly
+      updateContent(currentPageIndex, newContent)
 
       // Set cursor position after emoji and trigger change event
       setTimeout(() => {
@@ -151,13 +166,18 @@ export const useLetterState = () => {
         currentTextarea.dispatchEvent(event)
       }, 10)
     },
-    [currentPageIndex, pages, getCurrentTextarea, updatePages]
+    [
+      currentPageIndex,
+      writeLetterParams.contents,
+      getCurrentTextarea,
+      updateContent,
+    ]
   )
 
   const debugRefs = useCallback(() => {
     console.log('=== DEBUG REFS ===')
     console.log('Current page index:', currentPageIndex)
-    console.log('Total pages:', pages.length)
+    console.log('Total pages:', writeLetterParams.contents.length)
     console.log('Available textareas:', textareaRefs.current.length)
     console.log(
       'Textareas detail:',
@@ -168,15 +188,16 @@ export const useLetterState = () => {
         isFocused: ref === document.activeElement,
       }))
     )
-  }, [currentPageIndex, pages.length])
+  }, [currentPageIndex, writeLetterParams.contents.length])
 
   return {
     // State
     pages,
     currentPageIndex,
     letterCount,
-    fontSettings,
+    fontSettings: writeLetterParams.fontSettings,
     textareaRefs,
+    letterConfig,
 
     // Page actions
     addNewPage,

@@ -15,9 +15,9 @@ export const fetcher = ofetch.create({
     }
   },
   async onResponseError({ response }) {
-    if (response.status === 401) {
-      await deleteTokenAndNavigateLogin()
-    }
+    // if (response.status === 401) {
+    //   await deleteTokenAndNavigateLogin()
+    // }
     throw new Error(
       `Request failed with status ${response.status}: ${response.statusText}`
     )

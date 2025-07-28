@@ -1,168 +1,41 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
-import { CategoryValueEnum } from '@/utils/types/letter'
+import {
+  useGetAllLetterCategories,
+  useGetLetterTemplatesByCategory,
+} from '@/services/letter'
+import { useWriteLetterStore } from '@/stores/useWriteLetterStore'
 import Image from 'next/image'
-import { useState } from 'react'
-
-interface LetterTemplate {
-  id: string
-  title: string
-  price: string
-  category: 'original' | 'image' | 'postcard'
-  bgColor: string
-  illustration?: string
-}
-
-const letterTemplates: LetterTemplate[] = [
-  {
-    id: '1',
-    title: 'The love letter',
-    price: '2,000원',
-    category: 'original',
-    bgColor: 'bg-pink-100',
-    illustration: '=',
-  },
-  {
-    id: '2',
-    title: 'LUV MEMO_H',
-    price: '2,000원',
-    category: 'image',
-    bgColor: 'bg-yellow-200',
-  },
-  {
-    id: '3',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-purple-300',
-  },
-  {
-    id: '4',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-blue-600',
-  },
-  {
-    id: '5',
-    title: 'The love letter',
-    price: '2,000원',
-    category: 'original',
-    bgColor: 'bg-pink-100',
-    illustration: '=',
-  },
-  {
-    id: '6',
-    title: 'LUV MEMO_H',
-    price: '2,000원',
-    category: 'image',
-    bgColor: 'bg-pink-100',
-  },
-  {
-    id: '7',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-purple-300',
-  },
-  {
-    id: '8',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-blue-600',
-  },
-  {
-    id: '9',
-    title: 'The love letter',
-    price: '2,000원',
-    category: 'original',
-    bgColor: 'bg-pink-100',
-    illustration: '=',
-  },
-  {
-    id: '10',
-    title: 'LUV MEMO_H',
-    price: '2,000원',
-    category: 'image',
-    bgColor: 'bg-pink-100',
-  },
-  {
-    id: '11',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-purple-300',
-  },
-  {
-    id: '12',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-blue-600',
-  },
-  {
-    id: '13',
-    title: 'The love letter',
-    price: '2,000원',
-    category: 'original',
-    bgColor: 'bg-pink-100',
-    illustration: '=',
-  },
-  {
-    id: '14',
-    title: 'LUV MEMO_H',
-    price: '2,000원',
-    category: 'image',
-    bgColor: 'bg-pink-100',
-  },
-  {
-    id: '15',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-purple-300',
-  },
-  {
-    id: '16',
-    title: '편지',
-    price: '2,000원',
-    category: 'postcard',
-    bgColor: 'bg-blue-600',
-  },
-]
-
-const CATEGORIES = [
-  { label: '전체', value: CategoryValueEnum.ALL },
-  { label: '원래의', value: CategoryValueEnum.ORIGINAL },
-  { label: '단순한', value: CategoryValueEnum.IMAGE },
-  { label: '주제', value: CategoryValueEnum.POSTCARD },
-]
+import { useEffect, useState } from 'react'
 
 type Props = {
   hidden?: boolean
   onContinue?: () => void
   onSkipToPhotos?: () => void
 }
+
 export function SelectLetterTheme({
   hidden,
   onContinue,
   onSkipToPhotos,
 }: Props) {
-  const [activeCategory, setActiveCategory] = useState(CategoryValueEnum.ALL)
+  const { data: categories, isLoading: categoriesLoading } =
+    useGetAllLetterCategories()
+  const [activeCategory, setActiveCategory] = useState<number>()
+  const { data: templates, isLoading: templatesLoading } =
+    useGetLetterTemplatesByCategory(activeCategory)
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
-
-  const filteredTemplates = letterTemplates.filter(
-    (template) =>
-      activeCategory === 'all' || template.category === activeCategory
+  const { setTemplateWithDetails, selectedTemplate, clearTemplate } =
+    useWriteLetterStore()
+  const [flippedTemplates, setFlippedTemplates] = useState<Set<number>>(
+    new Set()
   )
-
-  const selectTemplate = (templateId: string) => {
-    setSelectedTemplate(selectedTemplate === templateId ? null : templateId)
-  }
+  useEffect(() => {
+    if (categories?.length) setActiveCategory(categories[0].id)
+  }, [categories])
 
   return (
     <div hidden={hidden}>
@@ -177,74 +50,130 @@ export function SelectLetterTheme({
       </div>
 
       <div className="mb-10 flex gap-3">
-        {CATEGORIES.map((category) => (
-          <Button
-            key={category.value}
-            variant={activeCategory === category.value ? 'default' : 'outline'}
-            onClick={() => setActiveCategory(category.value)}
-          >
-            {category.label}
-          </Button>
-        ))}
+        {categoriesLoading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-10 w-20" />
+            ))
+          : categories?.map((category) => (
+              <Button
+                key={category.id}
+                variant={activeCategory === category.id ? 'default' : 'outline'}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                {category.name}
+              </Button>
+            ))}
       </div>
 
       {/* Templates Grid */}
-      <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {filteredTemplates.map((template) => (
-          <div
-            aria-label="card"
-            key={template.id}
-            className={cn(
-              `group hover:bg-secondary hover:border-secondary relative cursor-pointer overflow-hidden rounded-2xl border border-blue-100 bg-white p-4 transition-all`,
-              {
-                'border-secondary bg-secondary':
-                  selectedTemplate === template.id,
-              }
-            )}
-            onClick={() => selectTemplate(template.id)}
-          >
-            <div className="relative mb-4 aspect-[7/10] w-full">
-              <Image
-                src="/image/sample-letter-bg.png"
-                alt={template.title}
-                fill
-              />
-            </div>
-            {/* Template Title */}
-            <div>
-              <p
+      <div className="mb-10">
+        {templatesLoading || !activeCategory ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                className="overflow-hidden rounded-2xl border border-blue-100 bg-white p-4"
+              >
+                <Skeleton className="mb-4 aspect-[7/10] w-full" />
+                <div>
+                  <Skeleton className="mb-2 h-6 w-20" />
+                  <Skeleton className="mb-1 h-4 w-24" />
+                  <Skeleton className="h-3 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : templates && templates.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-6">
+            {templates.map((template) => (
+              <div
+                aria-label="card"
+                key={template.id}
                 className={cn(
-                  'text-primary text-large group-hover:text-text-primary font-bold',
+                  `group hover:bg-secondary hover:border-secondary relative cursor-pointer overflow-hidden rounded-2xl border border-blue-100 bg-white p-2.5 transition-all md:p-4`,
                   {
-                    'text-text-primary hover:text-text-primary':
-                      selectedTemplate === template.id,
+                    'border-secondary bg-secondary':
+                      selectedTemplate?.id === template.id,
                   }
                 )}
+                onClick={() => {
+                  setTemplateWithDetails(template)
+                }}
               >
-                {template.price}
-              </p>
-              <p className="text-small mb-1 font-bold">러브레터</p>
-              <p className="text-text-secondary text-small truncate">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </p>
-            </div>
+                <div
+                  className="relative mb-4 aspect-[7/10] w-full cursor-pointer"
+                  onClick={() => {
+                    setFlippedTemplates((prev) => {
+                      const newSet = new Set(prev)
+                      if (newSet.has(template.id)) {
+                        newSet.delete(template.id)
+                      } else {
+                        newSet.add(template.id)
+                      }
+                      return newSet
+                    })
+                  }}
+                >
+                  <Image
+                    src={
+                      flippedTemplates.has(template.id)
+                        ? template.thumbnail_back
+                        : template.thumbnail
+                    }
+                    alt={template.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover transition-all duration-300"
+                  />
+                </div>
+                {/* Template Title */}
+                <div>
+                  <p
+                    className={cn(
+                      'text-primary text-large group-hover:text-text-primary font-bold',
+                      {
+                        'text-text-primary hover:text-text-primary':
+                          selectedTemplate?.id === template.id,
+                      }
+                    )}
+                  >
+                    {template.price.toLocaleString()}원
+                  </p>
+                  <p className="text-small mb-1 font-bold">{template.name}</p>
+                  <p className="text-text-secondary text-small truncate">
+                    {template.tags || 'Beautiful letter template'}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <h3 className="text-text-primary mb-2 text-lg font-semibold">
+              템플릿을 찾을 수 없습니다
+            </h3>
+            <p className="text-text-secondary">
+              선택한 카테고리에 사용 가능한 템플릿이 없습니다.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Bottom Action Buttons */}
       <div className="flex gap-4">
         <Button
           color="tertiary"
-          size="xl"
+          size="lg"
           className="flex-1"
-          onClick={onSkipToPhotos}
+          onClick={() => {
+            clearTemplate()
+            onSkipToPhotos?.()
+          }}
         >
           사진/문서만 보내기
         </Button>
         <Button
-          size="xl"
+          size="lg"
           className="flex-1"
           disabled={!selectedTemplate}
           onClick={onContinue}

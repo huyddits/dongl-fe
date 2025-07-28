@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
-import { LetterPaperConfig } from '@/utils/types/letter'
+import { FONT_LIST, loadFontCSS } from '@/utils/constants/fonts'
+import { useEffect } from 'react'
 import { useLetterState } from '../../_hooks'
 import { LetterEditor, LetterToolbar } from '../index'
 
@@ -9,24 +10,13 @@ type Props = {
   onContinue?: () => void
 }
 
-const letterConfig = {
-  category: 'Simple',
-  name: '그린',
-  upperMarginPx: 54,
-  textWindowHorizontalSize: 462,
-  textWindowVerticalSize: 431,
-  lineSpacing: 24,
-  maxLines: 18,
-  price: 1000,
-  imgOnebonPath: '/image/sample-letter-bg.png',
-}
-
 export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
   const {
     pages,
     currentPageIndex,
     fontSettings,
     textareaRefs,
+    letterConfig,
     addNewPage,
     updatePages,
     setCurrentPageIndex,
@@ -39,6 +29,18 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
     updateColor,
     insertEmoji,
   } = useLetterState()
+
+  // Load font CSS when fontFamily changes
+  useEffect(() => {
+    if (fontSettings.fontFamily) {
+      const fontDetail = FONT_LIST.find(
+        (font) => font.value === fontSettings.fontFamily
+      )
+      if (fontDetail) {
+        loadFontCSS(fontDetail.value, fontDetail.src)
+      }
+    }
+  }, [fontSettings.fontFamily])
 
   return (
     <div hidden={hidden}>
@@ -72,14 +74,19 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
         />
 
         {/* Main Content Area */}
-        <div className="flex">
+        <div
+          className="flex"
+          style={{
+            fontFamily: fontSettings.fontFamily || 'inherit',
+          }}
+        >
           {/* Document Canvas */}
           <LetterEditor
             pages={pages}
             onPagesChange={updatePages}
             currentPageIndex={currentPageIndex}
             onCurrentPageChange={setCurrentPageIndex}
-            letterPaper={letterConfig as LetterPaperConfig}
+            letterConfig={letterConfig}
             fontSize={fontSettings.fontSize}
             fontFamily={fontSettings.fontFamily}
             fontWeight={fontSettings.fontWeight}
