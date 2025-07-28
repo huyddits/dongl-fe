@@ -1,6 +1,7 @@
 import { ColorSelect } from '@/components/svg'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
+import { FONT_LIST, FontItem } from '@/utils/constants/fonts'
 import {
   FontSizeEnum,
   FontWeightEnum,
@@ -44,7 +45,7 @@ export const LetterToolbar = ({
     onFontSizeChange(value as FontSizeEnum)
   }
 
-  const handleFontSelect = (font: { name: string; value: string }) => {
+  const handleFontSelect = (font: FontItem) => {
     onFontFamilyChange(font.value)
   }
 
@@ -54,7 +55,16 @@ export const LetterToolbar = ({
       <div className="flex flex-1 items-center gap-4">
         <FontSelector onFontSelect={handleFontSelect}>
           <div className="w-3/5 max-w-48">
-            <Select placeholder="글꼴 선택" open={false} className="w-full" />
+            <Select
+              placeholder="글꼴 선택"
+              open={false}
+              className="w-full"
+              value={fontSettings.fontFamily || undefined}
+              options={FONT_LIST.map((font) => ({
+                label: font.name,
+                value: font.value,
+              }))}
+            />
           </div>
         </FontSelector>
         <Select
@@ -72,7 +82,7 @@ export const LetterToolbar = ({
       </div>
 
       {/* Right Controls */}
-      <div className="ml-auto flex flex-1 items-center gap-3">
+      <div className="ml-auto flex flex-1 flex-wrap items-center gap-3">
         <div className="ml-auto flex items-center gap-1">
           <FontWeightPicker
             onChange={onFontWeightChange}
@@ -89,16 +99,16 @@ export const LetterToolbar = ({
             <Button variant="ghost" size="icon" icon={<SmileIcon />} />
           </EmojiPicker>
         </div>
-        {!!onSaveDraft && (
-          <Button variant="outline" color="tertiary" onClick={onSaveDraft}>
-            임시저장
-          </Button>
-        )}
-
-        <Button icon={<PlusIcon />} onClick={onAddPage}>
-          편지지 추가
-        </Button>
       </div>
+      {!!onSaveDraft && (
+        <Button variant="outline" color="tertiary" onClick={onSaveDraft}>
+          임시저장
+        </Button>
+      )}
+
+      <Button icon={<PlusIcon />} onClick={onAddPage}>
+        편지지 추가
+      </Button>
     </div>
   )
 }

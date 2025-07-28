@@ -17,7 +17,7 @@ const signupSchema = z
   .object({
     name: z.string().min(1, LOGIN_MESSAGES.name.min),
     email: z.string().email(LOGIN_MESSAGES.email.invalid),
-    phoneNumber: z.string().length(11, LOGIN_MESSAGES.phone.exact),
+    phone_number: z.string().length(11, LOGIN_MESSAGES.phone.exact),
     password: z.string().min(4, LOGIN_MESSAGES.password.min),
     confirmPassword: z.string().min(4, LOGIN_MESSAGES.confirmPassword.min),
   })
@@ -34,7 +34,7 @@ export default function SignupForm() {
     defaultValues: {
       name: '',
       email: '',
-      phoneNumber: '',
+      phone_number: '',
       password: '',
       confirmPassword: '',
     },
@@ -75,7 +75,7 @@ export default function SignupForm() {
         />
         <FormCompose
           control={form.control}
-          name="phoneNumber"
+          name="phone_number"
           label="휴대번호"
           render={(field) => (
             <Input

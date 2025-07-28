@@ -1,7 +1,8 @@
 'use client'
 
+import { useWriteLetterStore } from '@/stores/useWriteLetterStore'
 import { LetterStepEnum } from '@/utils/types/letter'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { ProgressSteps } from './_components/ProgressSteps'
 import {
   AddressInformation,
@@ -10,56 +11,26 @@ import {
   SelectPhotos,
   WriteLetter,
 } from './_components/steps'
-
-const LETTER_STEP = [
-  { label: '선택', value: LetterStepEnum.THEME },
-  { label: '편지 쓰기', value: LetterStepEnum.WRITE },
-  { label: '사진 선택', value: LetterStepEnum.PHOTO },
-  { label: '문서 전송', value: LetterStepEnum.DOCUMENTS },
-  {
-    label: '주소지작성',
-    value: LetterStepEnum.ADDRESSES,
-  },
-  { label: '우편 선택', value: LetterStepEnum.PAYMENT },
-]
+import { useLetterSteps } from './_hooks'
 
 export default function LetterPage() {
-  const [currentStep, setCurrentStep] = useState<string>(LetterStepEnum.THEME)
+  const { reset } = useWriteLetterStore()
+  const {
+    currentStep,
+    steps,
+    handleNextStep,
+    handlePrevStep,
+    handleSkipToPhotos,
+  } = useLetterSteps()
 
-  const handleStepClick = (stepValue: string | number) => {
-    setCurrentStep(String(stepValue))
-  }
-
-  const handleNextStep = () => {
-    const currentIndex = LETTER_STEP.findIndex(
-      (step) => step.value === currentStep
-    )
-    if (currentIndex < LETTER_STEP.length - 1) {
-      setCurrentStep(LETTER_STEP[currentIndex + 1].value)
-    }
-  }
-
-  const handlePrevStep = () => {
-    const currentIndex = LETTER_STEP.findIndex(
-      (step) => step.value === currentStep
-    )
-    if (currentIndex > 0) {
-      setCurrentStep(LETTER_STEP[currentIndex - 1].value)
-    }
-  }
-
-  const handleSkipToPhotos = () => {
-    setCurrentStep(LetterStepEnum.PHOTO)
-  }
+  // Reset all store state when entering the letter page
+  useEffect(() => {
+    reset()
+  }, [])
 
   return (
     <div className="container pb-10">
-      <ProgressSteps
-        steps={LETTER_STEP}
-        currentStep={currentStep}
-        onStepClick={handleStepClick}
-        className="mb-8"
-      />
+      <ProgressSteps steps={steps} currentStep={currentStep} className="mb-8" />
 
       <SelectLetterTheme
         hidden={currentStep !== LetterStepEnum.THEME}

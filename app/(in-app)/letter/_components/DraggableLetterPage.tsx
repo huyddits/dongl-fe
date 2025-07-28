@@ -2,12 +2,12 @@ import { Button } from '@/components/ui/button'
 import {
   FontSizeEnum,
   FontWeightEnum,
-  LetterPaperConfig,
+  ILetterTemplate,
   Page,
   TextAlignEnum,
 } from '@/utils/types/letter'
 import { ChevronsUpDown } from 'lucide-react'
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, memo } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 
@@ -23,7 +23,7 @@ interface DraggableLetterPageProps {
   onMove: (dragIndex: number, hoverIndex: number) => void
   currentPageIndex: number
   onCurrentPageChange: (index: number) => void
-  letterPaper: LetterPaperConfig
+  letterConfig: ILetterTemplate
   fontSize: FontSizeEnum
   fontFamily: string
   fontWeight: FontWeightEnum
@@ -56,13 +56,13 @@ interface DraggableLetterPageProps {
 
 const ITEM_TYPE = 'LETTER_PAGE'
 
-export const DraggableLetterPage: React.FC<DraggableLetterPageProps> = ({
+const DraggableLetterPageComponent: React.FC<DraggableLetterPageProps> = ({
   page,
   pageIndex,
   onMove,
   currentPageIndex,
   onCurrentPageChange,
-  letterPaper,
+  letterConfig,
   fontSize,
   fontFamily,
   fontWeight,
@@ -149,7 +149,7 @@ export const DraggableLetterPage: React.FC<DraggableLetterPageProps> = ({
     <div
       ref={ref}
       data-handler-id={handlerId}
-      className="relative mb-6"
+      className="letter-page-zoom relative mb-6"
       style={{
         opacity: isDragging ? 0.5 : 1,
         transition: 'opacity 0.2s ease',
@@ -161,8 +161,8 @@ export const DraggableLetterPage: React.FC<DraggableLetterPageProps> = ({
         style={{
           width: `${PAPER_WIDTH + 80}px`,
           minHeight: `${PAPER_HEIGHT + TOP_PADDING + 40}px`,
-          backgroundImage: letterPaper.imgOnebonPath
-            ? `url(${letterPaper.imgOnebonPath})`
+          backgroundImage: letterConfig.thumbnail_original
+            ? `url(${letterConfig.thumbnail_original})`
             : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -181,34 +181,10 @@ export const DraggableLetterPage: React.FC<DraggableLetterPageProps> = ({
           icon={<ChevronsUpDown />}
         />
         {/* Page number */}
-        <div className="absolute top-4 left-4 text-sm font-medium text-gray-600">
+        <div className="text-text-primary absolute top-4 left-4 text-sm font-bold">
           {pageIndex + 1}페이지
         </div>
 
-        {/* Letter lines background */}
-        <div
-          className="pointer-events-none absolute"
-          style={{
-            top: `${TOP_PADDING}px`,
-            left: '36px',
-            right: '36px',
-            backgroundColor: 'rgba(255, 255, 255, 0.3)',
-          }}
-        >
-          {Array.from({ length: MAX_LINES }).map((_, i) => (
-            <div
-              key={i}
-              className="border-b border-gray-400/50"
-              style={{
-                height: `${LINE_HEIGHT}px`,
-                width: `${PAPER_WIDTH}px`,
-                marginLeft: 4,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Textarea for writing */}
         <textarea
           ref={(el) => {
             textareaRef(el)
@@ -254,3 +230,28 @@ export const DraggableLetterPage: React.FC<DraggableLetterPageProps> = ({
     </div>
   )
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export const DraggableLetterPage = memo(
+  DraggableLetterPageComponent,
+  (prevProps, nextProps) => {
+    // Custom comparison function for better performance
+    return (
+      prevProps.page.id === nextProps.page.id &&
+      prevProps.page.content === nextProps.page.content &&
+      prevProps.pageIndex === nextProps.pageIndex &&
+      prevProps.currentPageIndex === nextProps.currentPageIndex &&
+      prevProps.fontSize === nextProps.fontSize &&
+      prevProps.fontFamily === nextProps.fontFamily &&
+      prevProps.fontWeight === nextProps.fontWeight &&
+      prevProps.textAlign === nextProps.textAlign &&
+      prevProps.textColor === nextProps.textColor &&
+      prevProps.letterSpacing === nextProps.letterSpacing &&
+      prevProps.PAPER_WIDTH === nextProps.PAPER_WIDTH &&
+      prevProps.PAPER_HEIGHT === nextProps.PAPER_HEIGHT &&
+      prevProps.LINE_HEIGHT === nextProps.LINE_HEIGHT &&
+      prevProps.TOP_PADDING === nextProps.TOP_PADDING &&
+      prevProps.MAX_LINES === nextProps.MAX_LINES
+    )
+  }
+)

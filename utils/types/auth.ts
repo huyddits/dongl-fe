@@ -1,14 +1,14 @@
 import { ApiResponse } from '@/utils/types/common'
 
 export interface ILoginFormValues {
-  phoneNumber: string
+  phone_number: string
   password: string
 }
 
 export interface ISignupFormValues {
   name: string
   email: string
-  phoneNumber: string
+  phone_number: string
   password: string
 }
 

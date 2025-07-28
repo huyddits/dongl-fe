@@ -59,3 +59,33 @@ export interface LetterPaperConfig {
   imgOnebonPath?: string
   imgBackPath?: string
 }
+
+export interface ILetterCategory {
+  id: number
+  name: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface ILetterTemplate {
+  id: number
+  letter_category_id: number
+  name: string
+  price: number
+  thumbnail: string
+  thumbnail_back: string
+  thumbnail_original: string
+  top_padding: number
+  context_width: number
+  context_height: number
+  context_line_height: number
+  max_line: number
+  sort_order: number
+  is_active: boolean
+  count: number
+  tags: string | null
+  created_at: string
+  updated_at: string
+}

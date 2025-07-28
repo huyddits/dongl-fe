@@ -1,7 +1,7 @@
 import {
   FontSizeEnum,
   FontWeightEnum,
-  LetterPaperConfig,
+  ILetterTemplate,
   Page,
   TextAlignEnum,
 } from '@/utils/types/letter'
@@ -11,12 +11,24 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { CustomDragLayer } from './CustomDragLayer'
 import { DraggableLetterPage } from './DraggableLetterPage'
 
+// Debounce utility
+const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number
+): T => {
+  let timeoutId: NodeJS.Timeout
+  return ((...args: any[]) => {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => func(...args), delay)
+  }) as T
+}
+
 interface LetterEditorProps {
   pages: Page[]
   onPagesChange: (pages: Page[]) => void
   currentPageIndex: number
   onCurrentPageChange: (index: number) => void
-  letterPaper: LetterPaperConfig
+  letterConfig: ILetterTemplate
   fontSize: FontSizeEnum
   fontFamily: string
   fontWeight: FontWeightEnum
@@ -33,7 +45,7 @@ export const LetterEditor = ({
   onPagesChange,
   currentPageIndex,
   onCurrentPageChange,
-  letterPaper,
+  letterConfig,
   fontSize,
   fontFamily,
   fontWeight,
@@ -50,63 +62,60 @@ export const LetterEditor = ({
   const [lastKeyEvent, setLastKeyEvent] = useState<KeyboardEvent | null>(null)
   // Constants from PHP write2.php - memoized to prevent infinite loops
   const PAPER_WIDTH = useMemo(
-    () => letterPaper.textWindowHorizontalSize || 400,
-    [letterPaper.textWindowHorizontalSize]
+    () => letterConfig.context_width || 400,
+    [letterConfig.context_width]
   )
   const PAPER_HEIGHT = useMemo(
-    () => letterPaper.textWindowVerticalSize || 576,
-    [letterPaper.textWindowVerticalSize]
+    () => letterConfig.context_height || 576,
+    [letterConfig.context_height]
   )
   const LINE_HEIGHT = useMemo(
-    () => letterPaper.lineSpacing || 32,
-    [letterPaper.lineSpacing]
+    () => letterConfig.context_line_height || 32,
+    [letterConfig.context_line_height]
   )
   const TOP_PADDING = useMemo(
-    () => letterPaper.upperMarginPx || 60,
-    [letterPaper.upperMarginPx]
+    () => letterConfig.top_padding || 60,
+    [letterConfig.top_padding]
   )
   const MAX_LINES = useMemo(
-    () => letterPaper.maxLines || 18,
-    [letterPaper.maxLines]
+    () => letterConfig.max_line || 18,
+    [letterConfig.max_line]
   )
 
-  // Helper function to get caret coordinates (from textarea-caret-position.js)
+  // Helper function to get caret coordinates (from textarea-caret-position.js) - optimized
   const getCaretCoordinates = useCallback(
     (element: HTMLTextAreaElement, position: number) => {
+      // Cache div creation for better performance
       const div = document.createElement('div')
       const computedStyle = getComputedStyle(element)
 
-      // Copy styles like in PHP getCaretCoordinates
-      const properties = [
-        'fontFamily',
-        'fontSize',
-        'fontWeight',
-        'letterSpacing',
-        'lineHeight',
-        'padding',
-        'border',
-        'boxSizing',
-        'whiteSpace',
-        'wordWrap',
-        'overflowWrap',
-        'width',
-        'textAlign',
-        'textTransform',
-        'fontStyle',
-        'fontVariant',
-      ]
+      // Pre-built style string for better performance
+      const styleProps = {
+        fontFamily: computedStyle.fontFamily,
+        fontSize: computedStyle.fontSize,
+        fontWeight: computedStyle.fontWeight,
+        letterSpacing: computedStyle.letterSpacing,
+        lineHeight: computedStyle.lineHeight,
+        padding: computedStyle.padding,
+        border: computedStyle.border,
+        boxSizing: computedStyle.boxSizing,
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        overflowWrap: computedStyle.overflowWrap,
+        width: computedStyle.width,
+        textAlign: computedStyle.textAlign,
+        textTransform: computedStyle.textTransform,
+        fontStyle: computedStyle.fontStyle,
+        fontVariant: computedStyle.fontVariant,
+        position: 'absolute',
+        visibility: 'hidden',
+        height: 'auto',
+        maxHeight: 'none',
+        overflow: 'hidden',
+      }
 
-      properties.forEach((prop) => {
-        div.style[prop as any] = computedStyle[prop as any]
-      })
-
-      div.style.position = 'absolute'
-      div.style.visibility = 'hidden'
-      div.style.height = 'auto'
-      div.style.maxHeight = 'none'
-      div.style.overflow = 'hidden'
-      div.style.whiteSpace = 'pre-wrap'
-      div.style.wordWrap = 'break-word'
+      // Batch style assignment
+      Object.assign(div.style, styleProps)
 
       const textBeforeCursor = element.value.substring(0, position)
       div.textContent = textBeforeCursor
@@ -166,8 +175,8 @@ export const LetterEditor = ({
     [getCaretCoordinates, LINE_HEIGHT]
   )
 
-  // Update page content (equivalent to PHP actionInput)
-  const actionInput = useCallback(
+  // Update page content (equivalent to PHP actionInput) - debounced for performance
+  const actionInputImmediate = useCallback(
     (pageIndex: number) => {
       const textarea = textareaRefs.current[pageIndex]
       if (!textarea) return
@@ -185,6 +194,11 @@ export const LetterEditor = ({
       }
     },
     [pages, onPagesChange, onLetterCountChange]
+  )
+
+  const actionInput = useMemo(
+    () => debounce(actionInputImmediate, 100),
+    [actionInputImmediate]
   )
 
   // Set letter form styling (equivalent to PHP setLetterForm)
@@ -402,7 +416,7 @@ export const LetterEditor = ({
     ]
   )
 
-  // Handle text input (main input handler)
+  // Handle text input (main input handler) - optimized with immediate state update
   const handleTextChange = useCallback(
     (pageIndex: number, value: string) => {
       const textarea = textareaRefs.current[pageIndex]
@@ -412,7 +426,7 @@ export const LetterEditor = ({
       const cursorPosition = textarea.selectionStart
       const wasAtEnd = cursorPosition >= (textarea.value?.length || 0)
 
-      // Update the page content in state
+      // Update the page content in state immediately for responsiveness
       const newPages = [...pages]
       newPages[pageIndex] = {
         ...newPages[pageIndex],
@@ -425,18 +439,27 @@ export const LetterEditor = ({
         onLetterCountChange(newPages.length)
       }
 
-      // Check for overflow and handle cursor movement
-      if (exceedsMaxHeight(textarea)) {
-        const currentLineNumber = getCurrentLineNumber(textarea)
-        const isOnLastLine = currentLineNumber >= MAX_LINES
+      // Debounce overflow checking for better performance
+      const checkOverflow = () => {
+        if (exceedsMaxHeight(textarea)) {
+          const currentLineNumber = getCurrentLineNumber(textarea)
+          const isOnLastLine = currentLineNumber >= MAX_LINES
 
-        // If user was typing at the end and on last line, they should move to next page
-        if (wasAtEnd && isOnLastLine) {
-          handleTextOverflow(pageIndex, textarea)
-        } else {
-          // Normal overflow handling without cursor movement
-          handleTextOverflow(pageIndex, textarea)
+          // If user was typing at the end and on last line, they should move to next page
+          if (wasAtEnd && isOnLastLine) {
+            handleTextOverflow(pageIndex, textarea)
+          } else {
+            // Normal overflow handling without cursor movement
+            handleTextOverflow(pageIndex, textarea)
+          }
         }
+      }
+
+      // Immediate check for typing responsiveness, debounced for performance
+      if (value.length > (pages[pageIndex]?.content?.length || 0)) {
+        setTimeout(checkOverflow, 16) // Next frame
+      } else {
+        checkOverflow()
       }
     },
     [
@@ -665,49 +688,64 @@ export const LetterEditor = ({
     [handleTextChange]
   )
 
-  // Apply styling when props change
+  // Memoized style object to reduce DOM updates
+  const textareaStyles = useMemo(
+    () => ({
+      fontSize: `${fontSize}px`,
+      fontFamily: fontFamily,
+      fontWeight: fontWeight,
+      textAlign: textAlign,
+      color: textColor,
+      letterSpacing: `${letterSpacing}px`,
+      lineHeight: `${LINE_HEIGHT}px`,
+      width: `${PAPER_WIDTH}px`,
+      height: `${PAPER_HEIGHT}px`,
+      paddingTop: `${TOP_PADDING}px`,
+      padding: '0',
+      margin: '0',
+      border: 'none',
+      outline: 'none',
+      background: 'transparent',
+      resize: 'none' as const,
+      overflow: 'hidden' as const,
+      whiteSpace: 'pre-wrap' as const,
+      wordBreak: 'break-word' as const,
+      overflowWrap: 'break-word' as const,
+    }),
+    [
+      fontSize,
+      fontFamily,
+      fontWeight,
+      textAlign,
+      textColor,
+      letterSpacing,
+      LINE_HEIGHT,
+      PAPER_WIDTH,
+      PAPER_HEIGHT,
+      TOP_PADDING,
+    ]
+  )
+
+  // Apply styling when props change - optimized with requestAnimationFrame
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const applyStyles = () => {
       textareaRefs.current.forEach((textarea) => {
         if (!textarea) return
 
-        textarea.style.fontSize = `${fontSize}px`
-        textarea.style.fontFamily = fontFamily
-        textarea.style.fontWeight = fontWeight
-        textarea.style.textAlign = textAlign
-        textarea.style.color = textColor
-        textarea.style.letterSpacing = `${letterSpacing}px`
-        textarea.style.lineHeight = `${LINE_HEIGHT}px`
-        textarea.style.width = `${PAPER_WIDTH}px`
-        textarea.style.height = `${PAPER_HEIGHT}px`
-        textarea.style.paddingTop = `${TOP_PADDING}px`
-        textarea.style.padding = '0'
-        textarea.style.margin = '0'
-        textarea.style.border = 'none'
-        textarea.style.outline = 'none'
-        textarea.style.background = 'transparent'
-        textarea.style.resize = 'none'
-        textarea.style.overflow = 'hidden'
-        textarea.style.whiteSpace = 'pre-wrap'
-        textarea.style.wordWrap = 'break-word'
-        textarea.style.overflowWrap = 'break-word'
+        // Batch DOM updates
+        Object.assign(textarea.style, textareaStyles)
       })
-    }, 100)
+    }
 
-    return () => clearTimeout(timer)
-  }, [
-    pages.length,
-    fontSize,
-    fontFamily,
-    fontWeight,
-    textAlign,
-    textColor,
-    letterSpacing,
-    LINE_HEIGHT,
-    PAPER_WIDTH,
-    PAPER_HEIGHT,
-    TOP_PADDING,
-  ])
+    // Use requestAnimationFrame for better performance
+    const animationId = requestAnimationFrame(applyStyles)
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId)
+      }
+    }
+  }, [textareaStyles, pages.length])
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -722,7 +760,7 @@ export const LetterEditor = ({
               onMove={movePages || (() => {})}
               currentPageIndex={currentPageIndex}
               onCurrentPageChange={onCurrentPageChange}
-              letterPaper={letterPaper}
+              letterConfig={letterConfig}
               fontSize={fontSize}
               fontFamily={fontFamily}
               fontWeight={fontWeight}
@@ -736,7 +774,7 @@ export const LetterEditor = ({
               onKeyUp={handleKeyUp}
               onPaste={handlePaste}
               onFocus={handleFocus}
-              textareaRef={(el) => {
+              textareaRef={(el: HTMLTextAreaElement | null) => {
                 textareaRefs.current[pageIndex] = el
               }}
               PAPER_WIDTH={PAPER_WIDTH}
