@@ -35,10 +35,13 @@ export const metadata: Metadata = {
   },
 }
 
+export const runtime = 'edge'
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="vi" suppressHydrationWarning className="light">
-      <body className={`${inter.className} min-w-full`}>
+      <body
+        className={`${inter.className} min-w-full data-[scroll-locked]:!overflow-visible`}
+      >
         <ReactQueryProvider>
           <Toaster />
           {children}

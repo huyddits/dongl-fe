@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useWindowScroll } from '@/hooks'
 import { cn } from '@/lib/utils'
 import {
   useGetAllLetterCategories,
@@ -22,13 +23,14 @@ export function SelectLetterTheme({
   onContinue,
   onSkipToPhotos,
 }: Props) {
+  const { isScrollingUp } = useWindowScroll()
   const { data: categories, isLoading: categoriesLoading } =
     useGetAllLetterCategories()
   const [activeCategory, setActiveCategory] = useState<number>()
   const { data: templates, isLoading: templatesLoading } =
     useGetLetterTemplatesByCategory(activeCategory)
 
-  const { setTemplateWithDetails, selectedTemplate, clearTemplate } =
+  const { setSelectedTemplate, writeLetterParams, clearTemplate } =
     useWriteLetterStore()
   const [flippedTemplates, setFlippedTemplates] = useState<Set<number>>(
     new Set()
@@ -38,7 +40,7 @@ export function SelectLetterTheme({
   }, [categories])
 
   return (
-    <div hidden={hidden}>
+    <div hidden={hidden} className="relative">
       {/* Header */}
       <div className="mb-10">
         <h1 className="mb-2 text-[40px] font-semibold">
@@ -90,14 +92,14 @@ export function SelectLetterTheme({
                 aria-label="card"
                 key={template.id}
                 className={cn(
-                  `group hover:bg-secondary hover:border-secondary relative cursor-pointer overflow-hidden rounded-2xl border border-blue-100 bg-white p-2.5 transition-all md:p-4`,
+                  'group hover:border-secondary hover:bg-secondary relative cursor-pointer overflow-hidden rounded-2xl border border-blue-100 bg-white p-2.5 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg md:p-4',
                   {
-                    'border-secondary bg-secondary':
-                      selectedTemplate?.id === template.id,
+                    'border-secondary bg-secondary scale-[1.02] shadow-md':
+                      writeLetterParams.selectedTemplate?.id === template.id,
                   }
                 )}
                 onClick={() => {
-                  setTemplateWithDetails(template)
+                  setSelectedTemplate(template)
                 }}
               >
                 <div
@@ -123,7 +125,7 @@ export function SelectLetterTheme({
                     alt={template.name}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover transition-all duration-300"
+                    className="object-cover transition-all duration-500 group-hover:scale-105"
                   />
                 </div>
                 {/* Template Title */}
@@ -133,7 +135,8 @@ export function SelectLetterTheme({
                       'text-primary text-large group-hover:text-text-primary font-bold',
                       {
                         'text-text-primary hover:text-text-primary':
-                          selectedTemplate?.id === template.id,
+                          writeLetterParams.selectedTemplate?.id ===
+                          template.id,
                       }
                     )}
                   >
@@ -159,27 +162,39 @@ export function SelectLetterTheme({
         )}
       </div>
 
-      {/* Bottom Action Buttons */}
-      <div className="flex gap-4">
-        <Button
-          color="tertiary"
-          size="lg"
-          className="flex-1"
-          onClick={() => {
-            clearTemplate()
-            onSkipToPhotos?.()
-          }}
-        >
-          사진/문서만 보내기
-        </Button>
-        <Button
-          size="lg"
-          className="flex-1"
-          disabled={!selectedTemplate}
-          onClick={onContinue}
-        >
-          선택완료
-        </Button>
+      {/* Bottom Action Buttons - smooth slide in/out on scroll direction */}
+      <div
+        className={cn(
+          'fixed right-0 bottom-0 left-0 z-10',
+          'translate-y-0 transition-all duration-500 ease-out will-change-transform',
+          {
+            'pointer-events-none translate-y-full': !isScrollingUp,
+          }
+        )}
+      >
+        <div className="container pt-8 pb-6">
+          <div className="flex gap-3 rounded-xl border border-blue-100/50 bg-white/90 p-2 shadow-xl">
+            <Button
+              color="tertiary"
+              size="lg"
+              className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => {
+                clearTemplate()
+                onSkipToPhotos?.()
+              }}
+            >
+              사진/문서만 보내기
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+              disabled={!writeLetterParams.selectedTemplate}
+              onClick={onContinue}
+            >
+              선택완료
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

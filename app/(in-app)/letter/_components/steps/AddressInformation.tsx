@@ -6,6 +6,8 @@ import { Form, FormCompose } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
+import { useWindowScroll } from '@/hooks'
+import { cn } from '@/lib/utils'
 import { MapPinIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
@@ -36,6 +38,7 @@ type Props = {
 }
 
 export function AddressInformation({ hidden, onBack, onContinue }: Props) {
+  const { isScrollingUp } = useWindowScroll()
   const form = useForm<AddressFormData>({
     defaultValues: {
       senderService: '',
@@ -319,20 +322,36 @@ export function AddressInformation({ hidden, onBack, onContinue }: Props) {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              size="xl"
-              className="flex-1"
-              onClick={onBack}
-            >
-              이전
-            </Button>
-            <Button type="submit" size="xl" className="flex-1">
-              등록
-            </Button>
+          {/* Floating Action Buttons */}
+          <div
+            className={cn(
+              'fixed right-0 bottom-0 left-0 z-10',
+              'translate-y-0 transition-all duration-500 ease-out will-change-transform',
+              {
+                'pointer-events-none translate-y-full': !isScrollingUp,
+              }
+            )}
+          >
+            <div className="container pt-8 pb-6">
+              <div className="flex gap-3 rounded-xl border border-blue-100/50 bg-white/90 p-2 shadow-xl">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={onBack}
+                >
+                  이전
+                </Button>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  등록
+                </Button>
+              </div>
+            </div>
           </div>
         </form>
       </Form>

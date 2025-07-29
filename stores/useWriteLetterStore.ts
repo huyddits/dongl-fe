@@ -1,95 +1,94 @@
 import { FONT_LIST } from '@/utils/constants/fonts'
 import {
   ILetterTemplate,
-  FontSettings,
+  IStyling,
   FontSizeEnum,
   FontWeightEnum,
   TextAlignEnum,
   Page,
+  PhotoItem,
 } from '@/utils/types/letter'
 import { v4 as uuid } from 'uuid'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 interface WriteLetterParams {
-  templateId: string
-  contents: Page[]
-  fontSettings: FontSettings
+  selectedTemplate: ILetterTemplate | null
+  content: Page[]
+  styling: IStyling
+  photos: PhotoItem[]
 }
 
 interface WriteLetterStore {
   writeLetterParams: WriteLetterParams
-  selectedTemplate: ILetterTemplate | null
-  setTemplateId: (templateId: string) => void
-  setTemplateWithDetails: (template: ILetterTemplate) => void
+  setSelectedTemplate: (template: ILetterTemplate | null) => void
   clearTemplate: () => void
-  setContents: (contents: Page[]) => void
+  setContent: (content: Page[]) => void
   updateContent: (index: number, text: string) => void
   updatePage: (index: number, page: Page) => void
   addContent: (text: string) => void
   removeContent: (index: number) => void
   movePages: (dragIndex: number, hoverIndex: number) => void
-  setFontSettings: (fontSettings: FontSettings) => void
-  updateFontFamily: (fontFamily: string) => void
-  updateFontSize: (fontSize: FontSizeEnum) => void
-  updateFontWeight: (fontWeight: FontWeightEnum) => void
-  updateTextAlign: (textAlign: TextAlignEnum) => void
-  updateColor: (color: string) => void
+  setStyling: (styling: IStyling) => void
+  updateFontFamily: (font_family: string) => void
+  updateFontSize: (font_size: FontSizeEnum) => void
+  updateFontWeight: (font_weight: FontWeightEnum) => void
+  updateTextAlign: (text_align: TextAlignEnum) => void
+  updateLetterSpacing: (letter_spacing: number) => void
+  updateFontColor: (font_color: string) => void
+  // Photo management actions
+  setPhotos: (photos: PhotoItem[]) => void
+  addPhoto: (photoData: any) => void
+  removePhoto: (index: number) => void
+  restorePhoto: (index: number) => void
+  updatePhoto: (index: number, photoData: any) => void
+  clearRemovedPhotos: () => void
   reset: () => void
 }
 
 const initialState: WriteLetterParams = {
-  templateId: '',
-  contents: [
+  selectedTemplate: null,
+  content: [
     { id: uuid(), content: '' },
     { id: uuid(), content: '' },
     { id: uuid(), content: '' },
   ],
-  fontSettings: {
-    fontFamily: FONT_LIST[0].value,
-    fontSize: FontSizeEnum.LARGE,
-    fontWeight: FontWeightEnum.LIGHT,
-    textAlign: TextAlignEnum.LEFT,
-    color: '#000000',
+  styling: {
+    font_family: FONT_LIST[0].value,
+    font_size: FontSizeEnum.LARGE,
+    font_weight: FontWeightEnum.LIGHT,
+    text_align: TextAlignEnum.LEFT,
+    letter_spacing: 0,
+    font_color: '#000000',
   },
+  photos: [],
 }
 
 export const useWriteLetterStore = create<WriteLetterStore>()(
   devtools((set) => ({
     writeLetterParams: initialState,
-    selectedTemplate: null,
 
-    setTemplateId: (templateId: string) =>
+    setSelectedTemplate: (template: ILetterTemplate | null) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          templateId,
-        },
-      })),
-
-    setTemplateWithDetails: (template: ILetterTemplate) =>
-      set((state) => ({
-        selectedTemplate: template,
-        writeLetterParams: {
-          ...state.writeLetterParams,
-          templateId: String(template.id),
+          selectedTemplate: template,
         },
       })),
 
     clearTemplate: () =>
       set((state) => ({
-        selectedTemplate: null,
         writeLetterParams: {
           ...state.writeLetterParams,
-          templateId: '',
+          selectedTemplate: null,
         },
       })),
 
-    setContents: (contents: Page[]) =>
+    setContent: (content: Page[]) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          contents,
+          content,
         },
       })),
 
@@ -97,7 +96,7 @@ export const useWriteLetterStore = create<WriteLetterStore>()(
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          contents: state.writeLetterParams.contents.map((page, i) =>
+          content: state.writeLetterParams.content.map((page, i) =>
             i === index ? { ...page, content: text } : page
           ),
         },
@@ -107,7 +106,7 @@ export const useWriteLetterStore = create<WriteLetterStore>()(
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          contents: state.writeLetterParams.contents.map((p, i) =>
+          content: state.writeLetterParams.content.map((p, i) =>
             i === index ? page : p
           ),
         },
@@ -117,8 +116,8 @@ export const useWriteLetterStore = create<WriteLetterStore>()(
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          contents: [
-            ...state.writeLetterParams.contents,
+          content: [
+            ...state.writeLetterParams.content,
             { id: uuid(), content: text },
           ],
         },
@@ -128,7 +127,7 @@ export const useWriteLetterStore = create<WriteLetterStore>()(
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          contents: state.writeLetterParams.contents.filter(
+          content: state.writeLetterParams.content.filter(
             (_, i) => i !== index
           ),
         },
@@ -136,85 +135,155 @@ export const useWriteLetterStore = create<WriteLetterStore>()(
 
     movePages: (dragIndex: number, hoverIndex: number) =>
       set((state) => {
-        const newContents = [...state.writeLetterParams.contents]
-        const draggedPage = newContents[dragIndex]
+        const newContent = [...state.writeLetterParams.content]
+        const draggedPage = newContent[dragIndex]
 
         // Remove the dragged page and insert it at the new position
-        newContents.splice(dragIndex, 1)
-        newContents.splice(hoverIndex, 0, draggedPage)
+        newContent.splice(dragIndex, 1)
+        newContent.splice(hoverIndex, 0, draggedPage)
 
         return {
           writeLetterParams: {
             ...state.writeLetterParams,
-            contents: newContents,
+            content: newContent,
           },
         }
       }),
 
-    setFontSettings: (fontSettings: FontSettings) =>
+    setStyling: (styling: IStyling) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          fontSettings,
+          styling,
         },
       })),
 
-    updateFontFamily: (fontFamily: string) =>
+    updateFontFamily: (font_family: string) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          fontSettings: {
-            ...state.writeLetterParams.fontSettings,
-            fontFamily,
+          styling: {
+            ...state.writeLetterParams.styling,
+            font_family,
           },
         },
       })),
 
-    updateFontSize: (fontSize: FontSizeEnum) =>
+    updateFontSize: (font_size: FontSizeEnum) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          fontSettings: {
-            ...state.writeLetterParams.fontSettings,
-            fontSize,
+          styling: {
+            ...state.writeLetterParams.styling,
+            font_size,
           },
         },
       })),
 
-    updateFontWeight: (fontWeight: FontWeightEnum) =>
+    updateFontWeight: (font_weight: FontWeightEnum) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          fontSettings: {
-            ...state.writeLetterParams.fontSettings,
-            fontWeight,
+          styling: {
+            ...state.writeLetterParams.styling,
+            font_weight,
           },
         },
       })),
 
-    updateTextAlign: (textAlign: TextAlignEnum) =>
+    updateTextAlign: (text_align: TextAlignEnum) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          fontSettings: {
-            ...state.writeLetterParams.fontSettings,
-            textAlign,
+          styling: {
+            ...state.writeLetterParams.styling,
+            text_align,
           },
         },
       })),
 
-    updateColor: (color: string) =>
+    updateLetterSpacing: (letter_spacing: number) =>
       set((state) => ({
         writeLetterParams: {
           ...state.writeLetterParams,
-          fontSettings: {
-            ...state.writeLetterParams.fontSettings,
-            color,
+          styling: {
+            ...state.writeLetterParams.styling,
+            letter_spacing,
           },
         },
       })),
 
-    reset: () =>
-      set({ writeLetterParams: initialState, selectedTemplate: null }),
+    updateFontColor: (font_color: string) =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          styling: {
+            ...state.writeLetterParams.styling,
+            font_color,
+          },
+        },
+      })),
+
+    // Photo management actions
+    setPhotos: (photos: PhotoItem[]) =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          photos,
+        },
+      })),
+
+    addPhoto: (photoData: any) =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          photos: [
+            ...state.writeLetterParams.photos,
+            { data: photoData, isRemoved: false },
+          ],
+        },
+      })),
+
+    removePhoto: (index: number) =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          photos: state.writeLetterParams.photos.map((photo, i) =>
+            i === index ? { ...photo, isRemoved: true } : photo
+          ),
+        },
+      })),
+
+    restorePhoto: (index: number) =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          photos: state.writeLetterParams.photos.map((photo, i) =>
+            i === index ? { ...photo, isRemoved: false } : photo
+          ),
+        },
+      })),
+
+    updatePhoto: (index: number, photoData: any) =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          photos: state.writeLetterParams.photos.map((photo, i) =>
+            i === index ? { ...photo, data: photoData } : photo
+          ),
+        },
+      })),
+
+    clearRemovedPhotos: () =>
+      set((state) => ({
+        writeLetterParams: {
+          ...state.writeLetterParams,
+          photos: state.writeLetterParams.photos.filter(
+            (photo) => !photo.isRemoved
+          ),
+        },
+      })),
+
+    reset: () => set({ writeLetterParams: initialState }),
   }))
 )

@@ -67,3 +67,6 @@ prisma/migrations/
 
 # Environment variables
 .env
+certificates
+
+.open-next

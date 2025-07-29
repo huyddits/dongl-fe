@@ -12,6 +12,11 @@ export interface ISignupFormValues {
   password: string
 }
 
+export interface IForgotPasswordFormValues {
+  name: string
+  email: string
+}
+
 export type ILoginResponse = ApiResponse<{
   access_token: string
   refresh_token: string

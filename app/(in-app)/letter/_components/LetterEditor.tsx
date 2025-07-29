@@ -29,12 +29,12 @@ interface LetterEditorProps {
   currentPageIndex: number
   onCurrentPageChange: (index: number) => void
   letterConfig: ILetterTemplate
-  fontSize: FontSizeEnum
-  fontFamily: string
-  fontWeight: FontWeightEnum
-  textAlign: TextAlignEnum
-  textColor: string
-  letterSpacing: number
+  font_size: FontSizeEnum
+  font_family: string
+  font_weight: FontWeightEnum
+  text_align: TextAlignEnum
+  font_color: string
+  letter_spacing: number
   onLetterCountChange?: (count: number) => void
   textareaRefs?: React.MutableRefObject<(HTMLTextAreaElement | null)[]>
   movePages?: (dragIndex: number, hoverIndex: number) => void
@@ -46,12 +46,12 @@ export const LetterEditor = ({
   currentPageIndex,
   onCurrentPageChange,
   letterConfig,
-  fontSize,
-  fontFamily,
-  fontWeight,
-  textAlign,
-  textColor,
-  letterSpacing,
+  font_size,
+  font_family,
+  font_weight,
+  text_align,
+  font_color,
+  letter_spacing,
   onLetterCountChange,
   textareaRefs: externalTextareaRefs,
   movePages,
@@ -206,12 +206,12 @@ export const LetterEditor = ({
     textareaRefs.current.forEach((textarea) => {
       if (!textarea) return
 
-      textarea.style.fontSize = `${fontSize}px`
-      textarea.style.fontFamily = fontFamily
-      textarea.style.fontWeight = fontWeight
-      textarea.style.textAlign = textAlign
-      textarea.style.color = textColor
-      textarea.style.letterSpacing = `${letterSpacing}px`
+      textarea.style.fontSize = `${font_size}px`
+      textarea.style.fontFamily = font_family
+      textarea.style.fontWeight = font_weight
+      textarea.style.textAlign = text_align
+      textarea.style.color = font_color
+      textarea.style.letterSpacing = `${letter_spacing}px`
       textarea.style.lineHeight = `${LINE_HEIGHT}px`
       textarea.style.width = `${PAPER_WIDTH}px`
       textarea.style.height = `${PAPER_HEIGHT}px`
@@ -228,12 +228,12 @@ export const LetterEditor = ({
       textarea.style.overflowWrap = 'break-word'
     })
   }, [
-    fontSize,
-    fontFamily,
-    fontWeight,
-    textAlign,
-    textColor,
-    letterSpacing,
+    font_size,
+    font_family,
+    font_weight,
+    text_align,
+    font_color,
+    letter_spacing,
     LINE_HEIGHT,
     PAPER_WIDTH,
     PAPER_HEIGHT,
@@ -691,12 +691,12 @@ export const LetterEditor = ({
   // Memoized style object to reduce DOM updates
   const textareaStyles = useMemo(
     () => ({
-      fontSize: `${fontSize}px`,
-      fontFamily: fontFamily,
-      fontWeight: fontWeight,
-      textAlign: textAlign,
-      color: textColor,
-      letterSpacing: `${letterSpacing}px`,
+      fontSize: `${font_size}px`,
+      fontFamily: font_family,
+      fontWeight: font_weight,
+      textAlign: text_align,
+      color: font_color,
+      letterSpacing: `${letter_spacing}px`,
       lineHeight: `${LINE_HEIGHT}px`,
       width: `${PAPER_WIDTH}px`,
       height: `${PAPER_HEIGHT}px`,
@@ -713,12 +713,12 @@ export const LetterEditor = ({
       overflowWrap: 'break-word' as const,
     }),
     [
-      fontSize,
-      fontFamily,
-      fontWeight,
-      textAlign,
-      textColor,
-      letterSpacing,
+      font_size,
+      font_family,
+      font_weight,
+      text_align,
+      font_color,
+      letter_spacing,
       LINE_HEIGHT,
       PAPER_WIDTH,
       PAPER_HEIGHT,
@@ -761,12 +761,12 @@ export const LetterEditor = ({
               currentPageIndex={currentPageIndex}
               onCurrentPageChange={onCurrentPageChange}
               letterConfig={letterConfig}
-              fontSize={fontSize}
-              fontFamily={fontFamily}
-              fontWeight={fontWeight}
-              textAlign={textAlign}
-              textColor={textColor}
-              letterSpacing={letterSpacing}
+              fontSize={font_size}
+              fontFamily={font_family}
+              fontWeight={font_weight}
+              textAlign={text_align}
+              textColor={font_color}
+              letterSpacing={letter_spacing}
               onTextChange={handleTextChange}
               onCompositionStart={handleCompositionStart}
               onCompositionEnd={handleCompositionEnd}

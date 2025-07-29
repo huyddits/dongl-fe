@@ -108,7 +108,7 @@ export function FileUpload({
   return (
     <div
       className={cn(
-        'relative flex h-80 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition-all duration-300',
+        'relative flex h-60 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition-all duration-300',
         isDragOver && !disabled
           ? 'border-primary bg-primary/10 shadow-lg'
           : 'border-primary hover:bg-primary/5 hover:border-primary/80 bg-white',

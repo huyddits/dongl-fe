@@ -39,12 +39,13 @@ export interface Page {
   content: string
 }
 
-export interface FontSettings {
-  fontFamily: string
-  fontSize: FontSizeEnum
-  fontWeight: FontWeightEnum
-  textAlign: TextAlignEnum
-  color: string
+export interface IStyling {
+  font_family: string
+  font_size: FontSizeEnum
+  font_weight: FontWeightEnum
+  text_align: TextAlignEnum
+  letter_spacing: number
+  font_color: string
 }
 
 export interface LetterPaperConfig {
@@ -88,4 +89,70 @@ export interface ILetterTemplate {
   tags: string | null
   created_at: string
   updated_at: string
+}
+
+export interface ILetterDraft {
+  id: number
+  template_id: number
+  content: Page[]
+  styling: IStyling
+  created_at: string
+  updated_at: string
+  template?: ILetterTemplate
+}
+
+export interface ICreateDraftBody {
+  template_id: number
+  content: string[]
+  styling: IStyling
+}
+
+export interface UpdateLetterDraftRequest extends ICreateDraftBody {
+  id: number
+}
+
+export interface IAttachFilesToLetterRequest {
+  letter_id: number
+  type: 'photo' | 'attachment'
+  files: File[]
+}
+
+export interface ILetterFile {
+  id: number
+  letter_id: number
+  type: 'photo' | 'attachment'
+  filename: string
+  original_filename: string
+  file_size: number
+  mime_type: string
+  url: string
+  created_at: string
+  updated_at: string
+}
+
+export type IPhotoData = {
+  id: number
+  original_filename: string
+  file_url: string
+  uploaded_at: string
+}
+
+export interface PhotoItem {
+  data: IPhotoData | File
+  isRemoved?: boolean
+}
+
+export interface LetterPhotoParams {
+  uploadedPhotos: File[]
+  removedPhotos: number[]
+}
+
+export interface ILetterResponse {
+  id: number
+  template_id: number
+  content: Page[]
+  styling: IStyling
+  created_at: string
+  updated_at: string
+  template?: ILetterTemplate
 }

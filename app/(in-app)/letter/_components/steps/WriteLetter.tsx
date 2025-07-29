@@ -1,4 +1,8 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
+import { useWindowScroll } from '@/hooks'
+import { cn } from '@/lib/utils'
 import { FONT_LIST, loadFontCSS } from '@/utils/constants/fonts'
 import { useEffect } from 'react'
 import { useLetterState } from '../../_hooks'
@@ -11,10 +15,11 @@ type Props = {
 }
 
 export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
+  const { isScrollingUp } = useWindowScroll()
   const {
     pages,
     currentPageIndex,
-    fontSettings,
+    styling,
     textareaRefs,
     letterConfig,
     addNewPage,
@@ -26,21 +31,21 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
     updateFontSize,
     updateFontWeight,
     updateTextAlign,
-    updateColor,
+    updateFontColor,
     insertEmoji,
   } = useLetterState()
 
   // Load font CSS when fontFamily changes
   useEffect(() => {
-    if (fontSettings.fontFamily) {
+    if (styling.font_family) {
       const fontDetail = FONT_LIST.find(
-        (font) => font.value === fontSettings.fontFamily
+        (font) => font.value === styling.font_family
       )
       if (fontDetail) {
         loadFontCSS(fontDetail.value, fontDetail.src)
       }
     }
-  }, [fontSettings.fontFamily])
+  }, [styling.font_family])
 
   return (
     <div hidden={hidden}>
@@ -63,13 +68,13 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
         {/* Header Toolbar */}
         <LetterToolbar
           pages={pages}
-          fontSettings={fontSettings}
+          styling={styling}
           onAddPage={addNewPage}
           onFontFamilyChange={updateFontFamily}
           onFontSizeChange={updateFontSize}
           onFontWeightChange={updateFontWeight}
           onTextAlignChange={updateTextAlign}
-          onColorChange={updateColor}
+          onFontColorChange={updateFontColor}
           onEmojiSelect={insertEmoji}
         />
 
@@ -77,7 +82,7 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
         <div
           className="flex"
           style={{
-            fontFamily: fontSettings.fontFamily || 'inherit',
+            fontFamily: styling.font_family || 'inherit',
           }}
         >
           {/* Document Canvas */}
@@ -87,12 +92,12 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
             currentPageIndex={currentPageIndex}
             onCurrentPageChange={setCurrentPageIndex}
             letterConfig={letterConfig}
-            fontSize={fontSettings.fontSize}
-            fontFamily={fontSettings.fontFamily}
-            fontWeight={fontSettings.fontWeight}
-            textAlign={fontSettings.textAlign}
-            textColor={fontSettings.color}
-            letterSpacing={0}
+            font_size={styling.font_size}
+            font_family={styling.font_family}
+            font_weight={styling.font_weight}
+            text_align={styling.text_align}
+            font_color={styling.font_color}
+            letter_spacing={styling.letter_spacing}
             onLetterCountChange={handleLetterCountChange}
             textareaRefs={textareaRefs}
             movePages={movePages}
@@ -100,14 +105,35 @@ export const WriteLetter = ({ hidden, onBack, onContinue }: Props) => {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-8 flex gap-4">
-        <Button variant="outline" size="xl" className="flex-1" onClick={onBack}>
-          이전
-        </Button>
-        <Button size="xl" className="flex-1" onClick={onContinue}>
-          등록
-        </Button>
+      {/* Floating Action Buttons */}
+      <div
+        className={cn(
+          'fixed right-0 bottom-0 left-0 z-10',
+          'translate-y-0 transition-all duration-500 ease-out will-change-transform',
+          {
+            'pointer-events-none translate-y-full': !isScrollingUp,
+          }
+        )}
+      >
+        <div className="container pt-8 pb-6">
+          <div className="flex gap-3 rounded-xl border border-blue-100/50 bg-white/90 p-2 shadow-xl">
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              onClick={onBack}
+            >
+              이전
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              onClick={onContinue}
+            >
+              등록
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

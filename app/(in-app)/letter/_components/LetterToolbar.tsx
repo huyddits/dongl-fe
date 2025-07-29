@@ -1,15 +1,18 @@
 import { ColorSelect } from '@/components/svg'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
+import { useIsLoggedIn } from '@/hooks'
+import { isServer } from '@/lib'
 import { FONT_LIST, FontItem } from '@/utils/constants/fonts'
 import {
   FontSizeEnum,
   FontWeightEnum,
   TextAlignEnum,
-  FontSettings,
+  IStyling,
   Page,
 } from '@/utils/types/letter'
 import { PlusIcon, SmileIcon } from 'lucide-react'
+import { SaveDraftButton } from './SaveDraftButton'
 import {
   AlignPicker,
   ColorPicker,
@@ -18,29 +21,30 @@ import {
   FontWeightPicker,
 } from './index'
 
-interface LetterToolbarProps {
+type Props = {
   pages: Page[]
-  fontSettings: FontSettings
+  styling: IStyling
   onAddPage: () => void
-  onFontFamilyChange: (fontFamily: string) => void
-  onFontSizeChange: (fontSize: FontSizeEnum) => void
-  onFontWeightChange: (fontWeight: FontWeightEnum) => void
-  onTextAlignChange: (textAlign: TextAlignEnum) => void
-  onColorChange: (color: string) => void
+  onFontFamilyChange: (font_family: string) => void
+  onFontSizeChange: (font_size: FontSizeEnum) => void
+  onFontWeightChange: (font_weight: FontWeightEnum) => void
+  onTextAlignChange: (text_align: TextAlignEnum) => void
+  onFontColorChange?: (font_color: string) => void
   onEmojiSelect: (emoji: string) => void
   onSaveDraft?: () => void
 }
+
 export const LetterToolbar = ({
-  fontSettings,
+  styling,
   onAddPage,
   onFontFamilyChange,
   onFontSizeChange,
   onFontWeightChange,
   onTextAlignChange,
-  onColorChange,
+  onFontColorChange,
   onEmojiSelect,
-  onSaveDraft,
-}: LetterToolbarProps) => {
+}: Props) => {
+  const isLoggedIn = useIsLoggedIn()
   const handleFontSizeSelect = (value: string) => {
     onFontSizeChange(value as FontSizeEnum)
   }
@@ -59,7 +63,7 @@ export const LetterToolbar = ({
               placeholder="글꼴 선택"
               open={false}
               className="w-full"
-              value={fontSettings.fontFamily || undefined}
+              value={styling.font_family || undefined}
               options={FONT_LIST.map((font) => ({
                 label: font.name,
                 value: font.value,
@@ -70,7 +74,7 @@ export const LetterToolbar = ({
         <Select
           placeholder="글꼴 크기"
           className="w-2/5 max-w-36"
-          value={fontSettings.fontSize}
+          value={styling.font_size}
           onValueChange={handleFontSizeSelect}
           options={[
             { label: '큰글씨', value: FontSizeEnum.LARGE },
@@ -86,13 +90,13 @@ export const LetterToolbar = ({
         <div className="ml-auto flex items-center gap-1">
           <FontWeightPicker
             onChange={onFontWeightChange}
-            value={fontSettings.fontWeight}
+            value={styling.font_weight}
           />
           <AlignPicker
             onChange={onTextAlignChange}
-            value={fontSettings.textAlign}
+            value={styling.text_align}
           />
-          <ColorPicker value={fontSettings.color} onChange={onColorChange}>
+          <ColorPicker value={styling.font_color} onChange={onFontColorChange}>
             <Button variant="ghost" size="icon" icon={<ColorSelect />} />
           </ColorPicker>
           <EmojiPicker onChange={onEmojiSelect}>
@@ -100,15 +104,26 @@ export const LetterToolbar = ({
           </EmojiPicker>
         </div>
       </div>
-      {!!onSaveDraft && (
-        <Button variant="outline" color="tertiary" onClick={onSaveDraft}>
-          임시저장
-        </Button>
-      )}
+      <div className="flex items-center gap-2">
+        {isLoggedIn && !isServer() && (
+          <SaveDraftButton
+            render={(onSave, loading) => (
+              <Button
+                variant="outline"
+                color="tertiary"
+                onClick={onSave}
+                loading={loading}
+              >
+                임시저장
+              </Button>
+            )}
+          />
+        )}
 
-      <Button icon={<PlusIcon />} onClick={onAddPage}>
-        편지지 추가
-      </Button>
+        <Button icon={<PlusIcon />} onClick={onAddPage}>
+          편지지 추가
+        </Button>
+      </div>
     </div>
   )
 }

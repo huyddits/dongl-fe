@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/ui/file-upload'
+import { useWindowScroll } from '@/hooks'
 import { cn } from '@/lib/utils'
 import { CheckIcon, XIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -46,6 +47,7 @@ type Props = {
 }
 
 export function SelectPhotos({ hidden, onBack, onContinue }: Props) {
+  const { isScrollingUp } = useWindowScroll()
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null)
   const [photos, setPhotos] = useState<PhotoOption[]>(initialSamplePhotos)
 
@@ -196,24 +198,35 @@ export function SelectPhotos({ hidden, onBack, onContinue }: Props) {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4">
-          <Button
-            variant="outline"
-            size="xl"
-            className="flex-1"
-            onClick={onBack}
-          >
-            back to previous page
-          </Button>
-          <Button
-            size="xl"
-            className="flex-1"
-            disabled={!hasSelectedPhoto}
-            onClick={onContinue}
-          >
-            Continue
-          </Button>
+        {/* Floating Action Buttons */}
+        <div
+          className={cn(
+            'fixed right-0 bottom-0 left-0 z-10',
+            'translate-y-0 transition-all duration-500 ease-out will-change-transform',
+            {
+              'pointer-events-none translate-y-full': !isScrollingUp,
+            }
+          )}
+        >
+          <div className="container pt-8 pb-6">
+            <div className="flex gap-3 rounded-xl border border-blue-100/50 bg-white/90 p-2 shadow-xl">
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                onClick={onBack}
+              >
+                back to previous page
+              </Button>
+              <Button
+                size="lg"
+                className="flex-1 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+                onClick={onContinue}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

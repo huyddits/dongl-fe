@@ -1,56 +1,36 @@
 import { useWriteLetterStore } from '@/stores/useWriteLetterStore'
-import { Page, LetterPaperConfig } from '@/utils/types/letter'
+import { Page } from '@/utils/types/letter'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 
 export const useLetterState = () => {
   const {
-    selectedTemplate,
     writeLetterParams,
-    setContents,
+    setContent,
     updateContent,
     addContent,
-    removeContent,
     movePages: storeMovePages,
     updateFontFamily,
     updateFontSize,
     updateFontWeight,
     updateTextAlign,
-    updateColor,
+    updateLetterSpacing,
+    updateFontColor,
   } = useWriteLetterStore()
 
-  // Pages are now directly from store contents (already Page objects with UUIDs)
-  const pages = writeLetterParams.contents
+  // Pages are now directly from store content (already Page objects with UUIDs)
+  const pages = writeLetterParams.content
 
   // UI-only state (not sent to API)
   const [currentPageIndex, setCurrentPageIndexState] = useState(0)
   const [letterCount, setLetterCount] = useState(
-    writeLetterParams.contents.length
+    writeLetterParams.content.length
   )
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
 
   // Derive letter config from selected template using consistent keys
   const letterConfig = useMemo(() => {
-    if (selectedTemplate) {
-      return {
-        id: selectedTemplate.id,
-        letter_category_id: selectedTemplate.letter_category_id,
-        name: selectedTemplate.name,
-        price: selectedTemplate.price,
-        thumbnail: selectedTemplate.thumbnail,
-        thumbnail_back: selectedTemplate.thumbnail_back,
-        thumbnail_original: selectedTemplate.thumbnail_original,
-        top_padding: selectedTemplate.top_padding,
-        context_width: selectedTemplate.context_width,
-        context_height: selectedTemplate.context_height,
-        context_line_height: selectedTemplate.context_line_height,
-        max_line: selectedTemplate.max_line,
-        sort_order: selectedTemplate.sort_order,
-        is_active: selectedTemplate.is_active,
-        count: selectedTemplate.count,
-        tags: selectedTemplate.tags,
-        created_at: selectedTemplate.created_at,
-        updated_at: selectedTemplate.updated_at,
-      }
+    if (writeLetterParams.selectedTemplate) {
+      return writeLetterParams.selectedTemplate
     }
 
     // Fallback to default config with same structure
@@ -74,31 +54,31 @@ export const useLetterState = () => {
       created_at: '',
       updated_at: '',
     }
-  }, [selectedTemplate])
+  }, [writeLetterParams.selectedTemplate])
 
   // Update letter count when contents change
   useEffect(() => {
-    setLetterCount(writeLetterParams.contents.length)
-  }, [writeLetterParams.contents.length])
+    setLetterCount(writeLetterParams.content.length)
+  }, [writeLetterParams.content.length])
 
   // Page management - now works directly with store
   const addNewPage = useCallback(() => {
     addContent('')
-    setCurrentPageIndexState(writeLetterParams.contents.length)
+    setCurrentPageIndexState(writeLetterParams.content.length)
 
     // Focus new page after state update
     setTimeout(() => {
       const newPageTextarea =
-        textareaRefs.current[writeLetterParams.contents.length]
+        textareaRefs.current[writeLetterParams.content.length]
       newPageTextarea?.focus()
     }, 0)
-  }, [addContent, writeLetterParams.contents.length])
+  }, [addContent, writeLetterParams.content.length])
 
   const updatePages = useCallback(
     (newPages: Page[]) => {
-      setContents(newPages)
+      setContent(newPages)
     },
-    [setContents]
+    [setContent]
   )
 
   const setCurrentPageIndex = useCallback((index: number) => {
@@ -146,7 +126,7 @@ export const useLetterState = () => {
 
       const start = currentTextarea.selectionStart || 0
       const end = currentTextarea.selectionEnd || 0
-      const currentPage = writeLetterParams.contents[currentPageIndex]
+      const currentPage = writeLetterParams.content[currentPageIndex]
       const currentContent = currentPage?.content || ''
       const newContent =
         currentContent.slice(0, start) + emoji + currentContent.slice(end)
@@ -168,7 +148,7 @@ export const useLetterState = () => {
     },
     [
       currentPageIndex,
-      writeLetterParams.contents,
+      writeLetterParams.content,
       getCurrentTextarea,
       updateContent,
     ]
@@ -177,7 +157,7 @@ export const useLetterState = () => {
   const debugRefs = useCallback(() => {
     console.log('=== DEBUG REFS ===')
     console.log('Current page index:', currentPageIndex)
-    console.log('Total pages:', writeLetterParams.contents.length)
+    console.log('Total pages:', writeLetterParams.content.length)
     console.log('Available textareas:', textareaRefs.current.length)
     console.log(
       'Textareas detail:',
@@ -188,14 +168,14 @@ export const useLetterState = () => {
         isFocused: ref === document.activeElement,
       }))
     )
-  }, [currentPageIndex, writeLetterParams.contents.length])
+  }, [currentPageIndex, writeLetterParams.content.length])
 
   return {
     // State
     pages,
     currentPageIndex,
     letterCount,
-    fontSettings: writeLetterParams.fontSettings,
+    styling: writeLetterParams.styling,
     textareaRefs,
     letterConfig,
 
@@ -211,7 +191,8 @@ export const useLetterState = () => {
     updateFontSize,
     updateFontWeight,
     updateTextAlign,
-    updateColor,
+    updateLetterSpacing,
+    updateFontColor,
 
     // Utilities
     insertEmoji,

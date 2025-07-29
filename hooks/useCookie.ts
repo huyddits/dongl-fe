@@ -1,3 +1,5 @@
+'use client'
+
 import Cookies from 'js-cookie'
 import { useState, useEffect, useCallback } from 'react'
 
@@ -29,11 +31,13 @@ export function useCookie<T>(key: string, isObject?: boolean): T | undefined {
     }
   }, [key, isObject])
 
-  // State to store our value
-  const [storedValue, setStoredValue] = useState<T | undefined>(getStoredValue)
+  // State to store our value, initialize as undefined for SSR safety
+  const [storedValue, setStoredValue] = useState<T | undefined>(undefined)
 
-  // Listen for changes to the cookie
+  // Read cookie only on client after mount
   useEffect(() => {
+    setStoredValue(getStoredValue())
+
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === key && event.newValue !== event.oldValue) {
         setStoredValue(getStoredValue())
@@ -43,20 +47,20 @@ export function useCookie<T>(key: string, isObject?: boolean): T | undefined {
     // Check cookie value on interval for changes from js-cookie directly
     const intervalId = setInterval(() => {
       const newValue = getStoredValue()
-      if (JSON.stringify(newValue) !== JSON.stringify(storedValue)) {
-        setStoredValue(newValue)
-      }
+      setStoredValue((prev) => {
+        if (JSON.stringify(newValue) !== JSON.stringify(prev)) {
+          return newValue
+        }
+        return prev
+      })
     }, 1000)
 
-    // Add event listener for storage changes from other tabs
     window.addEventListener('storage', handleStorageChange)
-
-    // Cleanup
     return () => {
       clearInterval(intervalId)
       window.removeEventListener('storage', handleStorageChange)
     }
-  }, [key, storedValue, getStoredValue])
+  }, [key, getStoredValue])
 
   return storedValue
 }
